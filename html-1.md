@@ -149,4 +149,3 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
 * Buat file __index.html__ dan isi dokumen html tersebut dengan menggunakan beberapa tag yang dijelaskan di modul ini (minimal 7 tag dan beri penjelasannya)!
 * __Tugas dengan kode yang tidak rapi indentasinya tidak akan saya beri nilai!__
 * Kumpulkan di class edmodo yang telah dibuat untuk praktikum pemrograman web.
-* Format laporan bisa diunduh di [format laporan praktikum](https://github.com/NazirArifin/modulweb/blob/master/format-laporan.docx)
