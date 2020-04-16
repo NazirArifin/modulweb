@@ -64,7 +64,7 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
   </div>
 ```
 
-#### _*Informasi_
+#### _*Penting!_
 * __Selalu usahakan tertib indentasi pada kode yang Anda ketikkan agar struktur HTML Anda lebih mudah dipahami__.
 * Contoh kode yang kurang tepat (tidak tertib indentasi):
 
@@ -110,6 +110,37 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
 ## Praktikum
 
 * Ketik kode HTML berikut sebagai latihan dan pengenalan perintah-perintah HTML dan simpan dalam file html. 
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML</title>
+</head>
+
+<body>
+  <h1>HTML</h1>
+  <hr>
+  <!-- pengantar html -->
+  <p>
+    <strong><i>Hypertext Markup Language</i></strong> (HTML) adalah sebuah <em>bahasa markah</em> <del>jalan</del> yang
+    digunakan untuk membuat sebuah halaman web, menampilkan berbagai informasi di dalam sebuah penjelajah web Internet
+    dan pemformatan hiperteks sederhana yang ditulis dalam berkas format ASCII agar dapat menghasilkan tampilan wujud
+    yang terintegrasi.
+    <br>
+    Bermula dari sebuah bahasa yang sebelumnya banyak digunakan di dunia penerbitan dan percetakan yang disebut dengan
+    SGML (<i>Standard Generalized Markup Language</i>), HTML adalah sebuah standar yang digunakan secara luas untuk
+    menampilkan halaman web. <sup>[1]</sup>
+  </p>
+  <h4>Sumber:</h4>
+  <p>&copy; Wikipedia. 2020 &mdash; Indonesia</p>
+</body>
+
+</html>
+```
 
 
 
