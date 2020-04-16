@@ -1,4 +1,4 @@
-# Modul 1 - Pengenal, Struktur Dasar dan Elemen HTML
+# Modul 1 - Pengenalan, Struktur Dasar dan Elemen HTML
 
 Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web dan dapat membuat halaman web sederhana dengan HTML
 
@@ -33,6 +33,89 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
 
 * Perhatikan pula bahwa terdapat contoh tag yang tidak memiliki tag tutup yaitu tag `meta`.
 
+### Inline dan Block
+
+* Secara umum, elemen html dibagi menjadi dua macam yaitu elemen yang inline dan block.
+* Elemen yang _inline_ akan berusaha mengisi ruang kosong disebelah elemen lain hingga tidak ada ruang yang tersisa secara horizontal. Contoh elemen yang inline adalah ```<img>```, ```span```, dan lain sebagainya. Rata-rata elemen untuk teks merupakan elemen yang _inline_. 
+* Elemen yang _block_ akan berusaha untuk pindah baris berikutnya meskipun ada ruang disekitar elemen sebelumnya. Contoh elemen block adalah ```<p>```, ```<div>```, ```<h1>``` dan lain sebagainya.
+* Sifat elemen yang inline dan block dapat diubah dengan menggunakan CSS. 
+
+### Grouping (Mengelompokkan Elemen)
+
+* Elemen-elemen HTML dapat dikelompokkan dengan tujuan tertentu menggunakan tag span dan div. Tag span dan div tidak memiliki efek apapun pada tampilan dan dapat digunakan sebanyak yang Anda perlukan.
+
+* Untuk mengelompokkan tag yang _inline_ digunakan perintah __span__, contohnya: 
+
+```html
+    <p>
+      <span>
+        Notasi: <strong>O(n<sup>2</sup>)</strong>
+      </span>
+    </p>
+```
+
+* Sedangkan untuk mengelompokkan tag yang _block_ digunakan perintah __div__, contohnya:
+
+```html
+  <div>
+    <h2>Heading Level 2</h2>
+    <hr>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+  </div>
+```
+
+#### _*Informasi_
+* __Selalu usahakan tertib indentasi pada kode yang Anda ketikkan agar struktur HTML Anda lebih mudah dipahami__.
+* Contoh kode yang kurang tepat (tidak tertib indentasi):
+
+```html
+  <body>
+<div>
+<p><small>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</small></p>
+  </div>
+</body>
+```
+
+* Contoh kode yang benar (tertib indentasi):
+```html
+<body>
+  <div>
+    <p>
+      <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</small>
+    </p>
+  </div>
+</body>
+```
+
 ### Beberapa Tag HTML
 
-* Pada umumnya nama tag html merupakan singkatan dari elemen yang ingin dimasukkan. Berikut ini adalah beberapa contoh 
+* Pada umumnya nama tag html merupakan singkatan dari elemen yang ingin dimasukkan. Berikut ini adalah beberapa contoh tag html yang berhubungan dengan menampilkan teks:
+
+| Tag           | Keterangan                                            | Contoh Penggunaan              |
+| ------------- | ----------------------------------------------------- | ------------------------------ |
+| ```<h1..6>``` | Heading dengan level 1 sampai 6 (umumnya untuk judul) | ```<h1>heading level 1</h1>``` |
+| ```<p>```     | Paragraf (menyatakan teks sebagai paragraf)           | ```<p>lorem ipsum</p>```       |
+| ```<em>``` | Emphasis (memberi tekanan teks tersebut)              | ```<em>lorem</em>```           |
+| ```<strong>``` | Menandakan teks penting | ```<strong>penting</strong>``` |
+| ```<code>``` | Teks akan dianggap sebagai kode | ```<code><?php  ?></code>``` |
+| ```<i>``` | Italic, teks menjadi miring | ```<i>italic</i>``` |
+| ```<b>``` | Bold, teks menjadi tebal | ```<b>bold</b>``` |
+| ```<del>``` | Deleted, teks dicoret | ```<del>salah</del>``` |
+| ```<small>``` | Teks menjadi lebih kecil | ```<small>kecil</small>``` |
+| ```<sup>``` dan ```<sub>``` | Superscript dan subscript, misalnya untuk menuliskan pangkat | ```n<sup>2</sup>``` ```H<sub>2</sub>O``` |
+| ```<!-- comment -->``` | Membuat komentar di HTML, tidak akan ditampilkan di browser | ```<!-- ini komentar -->``` |
+| ```<br>``` | Break row, pindah baris | ```1<br>2``` |
+| ```&entity;``` | HTML entity, biasanya untuk menampilkan simbol dan karakter yang digunakan html seperti <, >, spasi, dll. [daftar html entity](https://html.spec.whatwg.org/multipage/named-characters.html#named-character-references) | ``` nbsp; &lt; &deg; &copy; |
+
+## Praktikum
+
+* Ketik kode HTML berikut sebagai latihan dan pengenalan perintah-perintah HTML dan simpan dalam file html. 
+
+
+
+## Tugas
+
+* Buat file __index.html__ dan isi dokumen html tersebut dengan menggunakan beberapa tag yang dijelaskan di modul ini (minimal 7 tag dan beri penjelasannya)!
+* __Tugas dengan kode yang tidak rapi indentasinya tidak akan saya beri nilai!__
+* Kumpulkan di class edmodo yang telah dibuat untuk praktikum pemrograman web.
+* Format laporan bisa diunduh di [format laporan praktikum](https://github.com/NazirArifin/modulweb/blob/master/format-laporan.docx)
