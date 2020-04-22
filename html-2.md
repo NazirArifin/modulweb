@@ -25,7 +25,7 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
 * Path relatif adalah mengakses resource dengan mempertimbangkan lokasi berkas pemanggilnya. Cirinya adalah path yang __tidak diawali__ tanda garis miring __/__ (langsung nama folder/file) atau diawali dengan tanda titik __./__ atau tanda titik dua kali __../__
 * Berikut ini adalah tiga (3) contoh kasus penggunaan path relatif:
 
-![path1](E:\Kuliah Ajar\Praktikum\Pemrograman Web\img\2-1.png)
+![path1](https://github.com/NazirArifin/modulweb/blob/master/img/2-1.png)
 
 * Kode HTML di file __index.html__ untuk menampilkan gambar __einstein.jpg__ adalah:
 
@@ -35,7 +35,7 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
 <img src="./image/einstein.jpg" alt="einstein">
 ```
 
-![path2](E:\Kuliah Ajar\Praktikum\Pemrograman Web\img\2-2.png)
+![path2](https://github.com/NazirArifin/modulweb/blob/master/img/2-2.png)
 
 * Kode HTML di file __newsimage.html__ untuk menampilkan gambar __einstein.jpg__ adalah:
 
@@ -43,7 +43,7 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
 <img src="../einstein.jpg" alt="einstein">
 ```
 
-![path3](E:\Kuliah Ajar\Praktikum\Pemrograman Web\img\2-3.png)
+![path3](https://github.com/NazirArifin/modulweb/blob/master/img/2-3.png)
 
 * Kode HTML di file __subnews.html__ untuk menampilkan gambar __einstein.jpg__ adalah:
 
@@ -53,17 +53,19 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
 
 ---
 
-* Path absolute adalah mengakses resource dengan menggunakan alamat absolut resource tujuan dan mengabaikan lokasi berkas pemanggil. Cirinya adalah diawali dengan tanda garis miring __/__ 
+* Path absolut adalah mengakses resource dengan menggunakan alamat absolut resource tujuan dan mengabaikan lokasi berkas pemanggil. Cirinya adalah diawali dengan tanda garis miring __/__ 
 * Untuk beberapa kasus, penggunaan path absolut lebih dianjurkan karena kita tidak perlu mengubah path jika berkas pemanggilnya dipindah ke lokasi lain
 * Kode HTML di file __subnews.html__ untuk menampilkan gambar __einstein.jpg__ menggunakan absolute path adalah:
 
 ```html
-
+<img src="/image/einstein.jpg" alt="einstein">
+<!-- perhatikan path diawali dengan tanda garis miring / tanpa titik -->
 ```
 
-
+* __PENTING__: Path relatif dan absolut tidak hanya untuk mengakses gambar seperti pada contoh diatas, tapi juga digunakan untuk mengakses berkas html lain atau resource lainnya
 
 ### Image / Gambar
 
 * Untuk menambahkan gambar pada halaman web, digunakan tag ```<img>``` dengan atribut ```src``` yang berisi path / URI dari file gambar yang akan dimasukkan serta ```alt``` yang berisi teks jika gambar tidak dapat dimunculkan oleh browser.
 * Contoh penggunaannya adalah: ```<img src="logo.png" alt="logo">```
+* Penggunaan path di atribut ```src``` sama dengan pada contoh di bagian __Path Relatif dan Absolut__.
