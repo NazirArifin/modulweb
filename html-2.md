@@ -4,6 +4,8 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
 
 ## Materi
 
+* Sebelum memulai materi perlu diperkenalkan beberapa istilah yang akan sering digunakan dalam tag / perintah yang akan dibahas pada modul ini. Istilah-istilah tersebut adalah:
+
 #### Atribut Tag
 
 * Setiap tag/perintah HTML dapat ditambahkan atribut tertentu dengan pola umum ```<tagnya atributnya="value">```. Contohnya: ```<img src="file.jpg">```, ```<p class="">```, dan lain sebagainya.
@@ -69,6 +71,7 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
 * Untuk menambahkan gambar pada halaman web, digunakan tag ```<img>``` dengan atribut ```src``` yang berisi path / URI dari file gambar yang akan dimasukkan serta ```alt``` yang berisi teks jika gambar tidak dapat dimunculkan oleh browser.
 * Contoh penggunaannya adalah: ```<img src="logo.png" alt="logo">```
 * Penggunaan path di atribut ```src``` sama dengan pada contoh di bagian [__Path Relatif dan Absolut__](#path-relatif-dan-absolut).
+* __INFORMASI__: Pastikan file gambar yang Anda gunakan tidak terlalu besar dan juga tidak terlalu kecil. File yang terlalu besar akan memperlambat munculnya gambar dan boros bandwidth, sedangkan gambar yang terlalu kecil menyebabkan tampilan nampak kurang bagus.
 
 #### Bandwidth Stealing (Hot Linking)?
 
@@ -86,7 +89,7 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
 
 * Ketikkan kode berikut ini dan tampilkan hasilnya pada laporan: (*simpan dengan nama file __index.html__)
 
-```htm
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -140,7 +143,7 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
 * Berikut ini contoh sederhana pembuatan tabel menggunakan tag-tag diatas:
 
 ```html
-<table>
+  <table>
     <thead>
       <tr>
         <th>Nilai</th>
@@ -164,10 +167,10 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
 
 #### Tugas 2:
 
-* Ketikkan kode berikut dibawah kode sebelumnya di [Tugas 1]() dan simpan.
+* Ketikkan kode berikut dibawah kode sebelumnya di [Tugas 1](#tugas-1) dan simpan.
 
 ```html
-<p>Sebelum:</p>
+  <p>Sebelum:</p>
   <table summary="contoh rowspan colspan1" border="1" width="100%">
     <tr>
       <td width="25%">1</td>
@@ -196,3 +199,67 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
   </table>
 ```
 
+### Form
+
+* Form biasa digunakan untuk mengumpulkan informasi dari pengguna. Dengan form ini maka server dapat menerima informasi dari pengguna melalui kontrol seperti checkbox, radio button, list menu dan lain sebagainya.
+* Form diproses oleh bahasa pemrograman sisi server seperti PHP (kita bahas PHP nanti)
+* Beberapa tag yang sering digunakan adalah sebagai berikut:
+
+| Tag              | Keterangan                                                   |
+| ---------------- | ------------------------------------------------------------ |
+| ```<form>```     | Membungkus semua input dengan form, beberapa properti yang sering digunakan adalah ```method``` dan ```action``` |
+| ```<fieldset>``` | Mengelompokkan beberapa input                                |
+| ```<legend>```   | Keterangan dari fieldset                                     |
+| ```<input>```    | Terdiri dari beberapa jenis input yaitu text, password, email, radio, checkbox, file, number, dsb dengan fungsinya masing-masing |
+| ```<select>```   | Input berupa list dropdown yang bisa dipilih satu atau lebih dengan atribut ```multiple``` |
+| ```<textarea>``` | Input text multi baris                                       |
+| ```<button>```   | Tombol dengan beberapa macam jenis seperti submit, reset, button, dsb |
+
+* Setiap input, select, dan textarea biasanya memiliki atribut ```name``` yang akan diproses oleh bahasa pemrograman sisi server
+
+## Praktikum
+
+#### Tugas 3:
+
+* Ketikkan kode berikut ini setelah kode sebelumnya pada tugas 2 dan simpan
+
+```html
+  <form method="post" action="">
+    <fieldset>
+      <legend>Masukkan data dengan tepat</legend>
+      Nama : <input type="text" name="nama" maxlength="30">
+      <br>
+      Password : <input type="password" name="password" maxlength="6">
+      <br>Jenis Kelamin :<br>
+      <input type="radio" name="jenis kelamin" value="l" checked="checked"> Laki-laki
+      <br>
+      <input type="radio" name="jenis kelamin" value="p"> Perempuan
+      <br>Hobi :<br>
+      <input type="checkbox" name="hobi1" value="mancing" checked="checked"> Mancing
+      <br>
+      <input type="checkbox" name="hobi2" value="berburu"> Berburu
+      <br>Pilih Kota :<br>
+      <select name="kota">
+        <option value="jakarta">Jakarta</option>
+        <option value="surabaya" selected="selected">Surabaya</option>
+      </select>
+      <br>Pesan :<br>
+      <textarea name="pesan" rows="3" cols="30">Tulis pesan disini</textarea>
+      <br>Upload Foto :</br>
+      <input type="file" name="file user" size="25">
+    </fieldset>
+    <fieldset>
+      <legend>Selesai</legend>
+      <input type="submit" value="SUBMIT"> &nbsp;
+      <input type="reset" value="CANCEL">
+    </fieldset>
+  </form>
+```
+
+## Tugas
+
+* Buat 2 file html dengan rincian:
+* __index.html__ berisi table berisi data siswa minimal 4 kolom / field (nis, nama, alamat, email), dan setiap baris siswa memiliki foto (*sembarang)
+* __daftar.html__ berisi form mendaftar
+* Di file index.html terdapat link yang jika diklik pindah halaman ke daftar.html dan sebaliknya di daftar terdapat link yang jika diklik pindah ke halaman index.html
+* Usahakan beri keterangan pada kode, per baris bila diperlukan!
