@@ -68,4 +68,131 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
 
 * Untuk menambahkan gambar pada halaman web, digunakan tag ```<img>``` dengan atribut ```src``` yang berisi path / URI dari file gambar yang akan dimasukkan serta ```alt``` yang berisi teks jika gambar tidak dapat dimunculkan oleh browser.
 * Contoh penggunaannya adalah: ```<img src="logo.png" alt="logo">```
-* Penggunaan path di atribut ```src``` sama dengan pada contoh di bagian __Path Relatif dan Absolut__.
+* Penggunaan path di atribut ```src``` sama dengan pada contoh di bagian [__Path Relatif dan Absolut__](#path-relatif-dan-absolut).
+
+#### Bandwidth Stealing (Hot Linking)?
+
+* Istilah bandwith stealing adalah jika kita menggunakan gambar dari situs lain pada halaman web yang kita buat. Gambar yang dikirim oleh server lain ke halaman kita tentu akan mengurangi kuota bandwidth server tersebut sesuai ukuran file yang kita ambil.
+* Untuk etika, usahakan jangan menampilkan gambar dari server lain tanpa seijin pemilik web, jika kita suka sebuah gambar, download file tersebut dan letakkan di server kita sendiri.
+* __INFORMASI__ : bandwidth stealing bisa dicegah dengan file __.htaccess__
+
+### Link Anchor
+
+* Elemen dapat diberi "jangkar" sehingga kita dapat langsung menuju ke dokumen tersebut dengan menggunakan link.
+
+## Praktikum
+
+#### Tugas 1:
+
+* Ketikkan kode berikut ini dan tampilkan hasilnya pada laporan: (*simpan dengan nama file __index.html__)
+
+```htm
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link Anchor</title>
+</head>
+
+<body>
+  <a href="#q1" name="top">What is CSS</a><br />
+  <a href="index.html#q2">What can I do with CSS</a><br />
+  <a href="#q3">What is difference between CSS and HTML?</a><br /><br /><br />
+  <a name="q1"><strong>What is CSS</strong></a>
+  <p>Maybe you already heard about CSS without really knowing what it is. In this lesson you will learn more about what
+    CSS is and what it can do for you.
+    CSS is an acronym for Cascading Style Sheets.</p>
+
+  <a name="q2"><strong>What can I do with CSS?</strong></a>
+  <p>CSS is a style language that defines layout of HTML documents. For example, CSS covers fonts, colours, margins,
+    lines, height, width, background images, advanced positions and many other things. Just wait and see!</p>
+
+  <a name="q3"><strong>What is the difference between CSS and HTML?</strong></a>
+  <p>HTML is used to structure content. CSS is used for formatting structured content.</p>
+  <a href="#top">kembali keatas</a>
+</body>
+
+</html>
+```
+* Pada kode diatas bagian ```<a href="#q1">``` merujuk pada bagian dengan name ```q1```. Jika beda file atau server perlakuannya juga sama, contohnya: ```http://example.com/index.html#faq``` maka akan menuju situs example.com dan mengarah pada anchor dengan name ```faq```.
+
+---
+
+* Ciri utama dari halaman web adalah kita bisa pindah-pindah dokumen dengan hanya mengklik sebuah link. Link bisa diaplikasikan pada beberapa elemen seperti teks, gambar dan elemen lain. Perintah dari pembuatan link adalah sama dengan pembuatan link anchor, contohnya: ```<a href="target_dokumen_yang_dituju">teks/gambar</a>```
+* Pastikan bahwa Anda tidak lupa memberi tutup tag ```</a>``` karena pasangan ini digunakan untuk membatasi bagian mana saja yang mengandung link atau bagian mana saja yang bisa diklik.
+* Pada umumnya teks yang mengandung link ditampilkan dengan garis bawah dan warna standarnya adalah biru muda (sebelum diklik) dan ungu (setelah diklik).
+* Penentuan value di atribut ```href``` pada link mengikuti pola path di bagian [__Path Relatif dan Absolut__](#path-relatif-dan-absolut)
+
+### Table
+
+* Untuk menampilkan data agar nampak lebih terstruktur salah satunya adalah dengan menggunakan tabel (table). Berikut ini beberapa tag yang digunakan dalam pembuatan tabel:
+
+| Tag                          | Keterangan                                                   |
+| ---------------------------- | ------------------------------------------------------------ |
+| ```<tr>```                   | Table Row, berfungsi menyatakan baris dalam tabel            |
+| ```<td>```                   | Table Data, menyatakan isi / data dari tabel                 |
+| ```<th>```                   | Table Header, menyatakan judul kolom (defaultnya tampil tebal) |
+| ```<thead>```, ```<tfoot>``` | Menyatakan bagian head dan foot dari tabel                   |
+| ```<tbody>```                | Menyatakan bagian tubuh / isi dari tabel                     |
+
+* Berikut ini contoh sederhana pembuatan tabel menggunakan tag-tag diatas:
+
+```html
+<table>
+    <thead>
+      <tr>
+        <th>Nilai</th>
+        <th>Keterangan</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>left</td>
+        <td>kiri</td>
+      </tr>
+    </tbody>
+  </table>
+```
+
+#### Menggabung sel (merge)
+
+* Untuk menggabung sel digunakan atribut __rowspan__ dan __colspan__ yang berisi angka tanpa satuan yang menandakan berapa jumlah sel yang digabung. Atribut ini digunakan pada tag ```th``` dan ```td```. Contohnya ```<td rowspan=2">``` yang berarti menggabung sel tersebut dengan sel dibawahnya.
+
+## Praktikum
+
+#### Tugas 2:
+
+* Ketikkan kode berikut dibawah kode sebelumnya di [Tugas 1]() dan simpan.
+
+```html
+<p>Sebelum:</p>
+  <table summary="contoh rowspan colspan1" border="1" width="100%">
+    <tr>
+      <td width="25%">1</td>
+      <td width="25%">2</td>
+      <td width="25%">3</td>
+      <td width="25%">4</td>
+    </tr>
+    <tr>
+      <td width="25%">5</td>
+      <td width="25%">6</td>
+      <td width="25%">7</td>
+      <td width="25%">8</td>
+    </tr>
+  </table>
+  <p>Sesudah:</p>
+  <table summary="contoh rowspan colspan2" border="1" width="100%">
+    <tr>
+      <td width="25%" rowspan="2">Sel 1 - 5 digabung</td>
+      <td width="25%">2</td>
+      <td width="25%">3</td>
+      <td width="25%">4</td>
+    </tr>
+    <tr>
+      <td colspan="3">Sel 6 - 7 - 8 digabung</td>
+    </tr>
+  </table>
+```
+
