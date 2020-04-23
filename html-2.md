@@ -163,6 +163,12 @@ Tujuan Pembelajaran: Mahasiswa mengenal HTML sebagai bagian dari pemrograman web
 
 * Untuk menggabung sel digunakan atribut __rowspan__ dan __colspan__ yang berisi angka tanpa satuan yang menandakan berapa jumlah sel yang digabung. Atribut ini digunakan pada tag ```th``` dan ```td```. Contohnya ```<td rowspan=2">``` yang berarti menggabung sel tersebut dengan sel dibawahnya.
 
+### Ordered & Unordered List
+
+* Ordered list (__ol__) merupakan daftar item-itemnya memiliki nomor yang berurutan. List berurutan dimulai dengan tag ```<ol>``` dan ditutup dengan tag ```</ol>```. Setiap item diberi tag ```<li>item</li>```.
+* Unordered list (__ul__) merupakan daftar item yang mengabaikan urutan item. Tag yang digunakan hampir sama dengan ```<ol>``` dengan perbedaan pada penggunaan tag ```<ul>...</ul>```
+* List bisa dibuat bertumpuk / _nested_ dimana sebuah daftar memiliki sub daftar dan seterusnya.
+
 ## Praktikum
 
 #### Tugas 2:
