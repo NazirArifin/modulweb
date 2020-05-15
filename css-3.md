@@ -10,7 +10,7 @@ Tujuan Pembelajaran: Mahasiswa mengenal konsep flex box di CSS dan dapat menggun
 
 * Flexbox diaplikasi pada ___flex container___ / wadah / induk elemen dan pada ___flex item___.
 * Flex item akan ditampilkan berdasarkan arah utama (__main axis__) dan arah menyilang (__cross axis__) dan kedua arah dapat dimulai dari awal __start__ sampai ke akhir __end__.
-* Untuk membuat sebuah container menjadi flexbox maka digunakan perintah css:
+* __PENTING__: Untuk membuat sebuah container menjadi flexbox maka digunakan perintah css (jangan sampai lupa perintah ini):
 
 ```css
 div {
@@ -72,13 +72,217 @@ div {
 
 ![align-content](https://github.com/NazirArifin/modulweb/blob/master/img/align-content.png)
 
+### Daftar Perintah untuk Item (Child)
+
+* __order__: defaultnya item ditampilkan berurutan sesuai kode HTMLnya, tapi Anda bisa mengubah urutannya dengan perintah ini. Nilainya berupa angka yang menentukan urutan dari item (defaulnya 0).
+
+![order](https://github.com/NazirArifin/modulweb/blob/master/img/order.png)
+
+* __flex-grow__: digunakan untuk menentukan kemampuan item untuk meluas jika diperlukan. Nilainya berupa angka yang jika semua item diberi angka 1 maka _container_ akan dibagi rata untuk semua child.
+
+![flex-grow](https://github.com/NazirArifin/modulweb/blob/master/img/flex-grow.png)
+
+* __flex-shrink__: menentukan kemampun item untuk menyusut jika diperlukan. Nilainya berupa angka
+
+* __flex-basis__: menentukan ukuran default sebelum dilakukan distribusi lebar/tinggi. Nilainya bisa berupa nilai yang sama ketika mengeset width atau height di box model. Nilainya juga bisa berupa beberapa kata kunci seperti: _auto_ (default), _content_ (berdasarkan isi dari item)
+
+* __flex__: gabungan dari flex-grow, flex-shrink dan flex-basis
+
+* __align-selt__: untuk memodifikasi perintah _alignment_ dari container (seperti align-items) dan berlaku untuk item itu saja. Nilainya sama dengan nilai di perintah align-items.
+
+![align-self](https://github.com/NazirArifin/modulweb/blob/master/img/align-self.png)
+
 ## Praktikum
 
+* Ketikkan kode HTML, CSS berikut dan tampilkan hasilnya di laporan
+* Usahakan jangan copy paste, ketik satu persatu dan pahami, tugas UAS salah satunya adalah melakukan desain dengan flexbox layout!
 
+```htm
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>CSS FlexBox</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div style="background:yellow;padding:5px">
+      <h4 style="text-align:center">
+        Ubah ukuran layar untuk melihat efek responsive
+      </h4>
+    </div>
 
+    <div class="header">
+      <h1>Websiteku</h1>
+      <p>Dengan <b>flexible</b> layout.</p>
+    </div>
 
+    <div class="navbar">
+      <a href="#">Link</a>
+      <a href="#">Link</a>
+      <a href="#">Link</a>
+      <a href="#">Link</a>
+    </div>
 
+    <div class="row">
+      <div class="side">
+        <h2>About Me</h2>
+        <h5>Photo of me:</h5>
+        <div class="fakeimg" style="height:200px;">Image</div>
+        <p>Some text about me in culpa qui officia deserunt mollit anim..</p>
+        <h3>More Text</h3>
+        <p>Lorem ipsum dolor sit ame.</p>
+        <div class="fakeimg" style="height:60px;">Image</div>
+        <br />
+        <div class="fakeimg" style="height:60px;">Image</div>
+        <br />
+        <div class="fakeimg" style="height:60px;">Image</div>
+      </div>
+      <div class="main">
+        <h2>TITLE HEADING</h2>
+        <h5>Title description, Dec 7, 2017</h5>
+        <div class="fakeimg" style="height:200px;">Image</div>
+        <p>Some text..</p>
+        <p>
+          Sunt in culpa qui officia deserunt mollit anim id est laborum
+          consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+          exercitation ullamco.
+        </p>
+        <br />
+        <h2>TITLE HEADING</h2>
+        <h5>Title description, Sep 2, 2017</h5>
+        <div class="fakeimg" style="height:200px;">Image</div>
+        <p>Some text..</p>
+        <p>
+          Sunt in culpa qui officia deserunt mollit anim id est laborum
+          consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+          exercitation ullamco.
+        </p>
+      </div>
+    </div>
 
+    <div class="footer">
+      <h2>Footer</h2>
+    </div>
+    
+    <!-- kode diambil dari https://www.w3schools.com/css/tryit.asp?filename=trycss3_flexbox_website2 -->
+  </body>
+</html>
+```
+
+```css
+body {
+  font-family: Arial;
+  margin: 0;
+}
+
+.header {
+  padding: 60px;
+  text-align: center;
+  background: #1abc9c;
+  color: white;
+}
+
+.navbar {
+  display: flex;
+  background-color: #333;
+}
+
+.navbar a {
+  color: white;
+  padding: 14px 20px;
+  text-decoration: none;
+  text-align: center;
+}
+
+.navbar a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.side {
+  flex: 30%;
+  background-color: #f1f1f1;
+  padding: 20px;
+}
+
+.main {
+  flex: 70%;
+  background-color: white;
+  padding: 20px;
+}
+
+.fakeimg {
+  background-color: #aaa;
+  width: 100%;
+  padding: 20px;
+}
+
+.footer {
+  padding: 20px;
+  text-align: center;
+  background: #ddd;
+}
+
+/* Responsive layout - when the screen is less than 700px wide, make the two columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 700px) {
+  .row,
+  .navbar {
+    flex-direction: column;
+  }
+}
+```
 
 ## Tugas
 
+* Menggunakan kode HTML berikut:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Layout Simple</title>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h3>Header</h3>
+      </header>
+      <div class="hero">
+        <p>Hero</p>
+      </div>
+      <div class="main-content">
+        <div class="content">
+          <p>Content</p>
+        </div>
+        <aside>
+          <p>Sidebar</p>
+        </aside>
+      </div>
+      <footer>
+        <p>Footer</p>
+      </footer>
+    </div>
+  </body>
+</html>
+```
+
+* Tambahkan CSS eksternal, gunakan flexbox layout untuk membuat tampilan  seperti dibawah dengan ketentuan: 
+
+  - Untuk layar kecil, sidebar dan content harus lebarnya full satu layar, sedangkan untuk layar menengah keatas sidebar dan content tampil bersebelahan
+  - Untuk layar kecil, sidebar harus muncul lebih dulu di browser dibandingkan content (urutannya dibalik)
+  - Selamat mengerjakan
+
+![tugas](https://github.com/NazirArifin/modulweb/blob/master/img/tugas-3.png)
