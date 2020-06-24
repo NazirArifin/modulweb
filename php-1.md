@@ -37,7 +37,7 @@ echo 'Hello World!';
 
 <?php
 echo "My first PHP script!";
-// PHP harus ditutup dengan ?> karena setelah PHP ada text <body>
+/* PHP harus ditutup dengan ?> karena setelah PHP ada text <body> */
 ?>
 
 </body>
@@ -63,7 +63,7 @@ echo $nomor + $label; // outputnya adalah 20, string '1' otomatis 1
 <?php
 $kota = 'Malang';
 $nama = 'kota';
-echo $$nama; // outputnya adalah: malang
+echo $$nama; // outputnya adalah: Malang
 ```
 
 ### String
@@ -143,8 +143,7 @@ class Animal {
 
   // public method
   public function whoAmI(): string {
-    return "Hi, I am {$this->name} live in {$this->location} has "
-    . count($this->children) . ' child(s)';
+    return "Hi, I am {$this->name} live in {$this->location} has " . count($this->children) . ' child(s)';
   }
 }
 
@@ -162,7 +161,7 @@ echo $ana->whoAmI(); // Hi, I am Lion live in cage has 1 child(s)
   - ```require```: sama dengan include, namun jika waktu memasukkan kode dari file lain ada error maka program akan berhenti mengeksekusi kode berikutnya
   - ```require_once```: sama dengan require, namun PHP hanya memasukkan kode satu kali saja
 
-* __Jika Anda memiliki file-file yang berisi class-class tersendiri, maka Anda dapat menggunakan fungsi ```spl_autoload_register``` yang dapat digunakan untuk melakukan include secara otomatis.
+* Jika Anda memiliki file-file yang berisi class-class tersendiri, maka Anda dapat menggunakan fungsi ```spl_autoload_register``` yang dapat digunakan untuk melakukan include secara otomatis.
 
 ## Praktikum
 
@@ -170,7 +169,7 @@ echo $ana->whoAmI(); // Hi, I am Lion live in cage has 1 child(s)
 
 * Aplikasi web yang baik adalah yang memisahkan antara _logic_ (alur / otak) dengan _view_ (tampilan). Pemisahan ini akan mempermudah dalam pengembangan dan perawatan aplikasi terutama jika aplikasi sudah semakin kompleks.
 
-* Kita akan membuat class manajemen view (tampilan), simpan dengan nama file "__MyView.php__":
+* Untuk menerapkan konsep pemisahaan logic dan view maka kita akan menggunakan beberapa file php. File pertama yang kita buat berisi class manajemen view (tampilan), simpan dengan nama file "__MyView.php__":
 
 ```php
 <?php
@@ -232,7 +231,7 @@ try {
 }
 ```
 
-* Selanjutnya kita buat satu contoh template untuk homepage, buat file dengan nama "__mahasiswa.php__" dan letakkan dalam folder "__templates__" (buat foldernya jika belum ada). Isi dari file __mahasiswa.php__ adalah:
+* Selanjutnya kita buat satu contoh template, buat file dengan nama "__mahasiswa.php__" dan letakkan dalam folder "__templates__" (buat foldernya jika belum ada). Isi dari file __mahasiswa.php__ adalah:
 
 ```php
 <!DOCTYPE html>
