@@ -66,6 +66,10 @@ $nama = 'kota';
 echo $$nama; // outputnya adalah: Malang
 ```
 
+### Variabel Scope
+
+* Scope variabel (wilayah mana saja variabel dapat dikenal) di PHP berbeda dengan C++, sehingga seringkali dibutuhkan kata kunci ```global``` dalam sebuah fungsi untuk mengakses variabel diluar fungsi tersebut
+
 ### String
 
 * Berbeda dengan Java, untuk menggabungkan dua string digunakan tanda titik __.__ dan bukan tanda plus __+__. Contohnya: ```echo 'Hello' . ' ' . 'World!';```
