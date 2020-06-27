@@ -60,7 +60,7 @@ Tujuan Pembelajaran: Mahasiswa mengenal dan memahami PHP dalam menangani form, d
 ```php
 <?php
 if (isset($_POST) && ! empty($_POST)) {
-  var_dump($_POST); // atau $_GET
+  var_dump($_POST);
 
 }
 ?><!DOCTYPE html>
@@ -333,7 +333,7 @@ switch ($url) {
 
     break;
   case '';
-    echo '<a href="/form">Formulir Pendaftara</a>';
+    echo '<a href="/form">Formulir Pendaftaran</a>';
     break;
   
   default:

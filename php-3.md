@@ -102,7 +102,6 @@ if ($mysqli->connect_errno) {
 $mysqli = new mysqli("example.com", "user", "password", "database");
 $res = $mysqli->query("SELECT id FROM test ORDER BY id ASC");
 
-$res->data_seek(0);
 while ($row = $res->fetch_assoc()) {
   echo ' id = ' . $row['id'] . PHP_EOL;
 }
@@ -113,7 +112,7 @@ while ($row = $res->fetch_assoc()) {
 ```php
 <?php
 $mysqli->real_query("SELECT id FROM test ORDER BY id ASC");
-$res = $mysqli->use_result(); // menggunakan use_result()
+$res = $mysqli->use_result();
 
 while ($row = $res->fetch_assoc()) {
   echo ' id = ' . $row['id'] . PHP_EOL;
@@ -122,12 +121,72 @@ while ($row = $res->fetch_assoc()) {
 
 ### Query Dengan Prepared Statements
 
+* MySQL mendukung prepared statements yang merupakan statement dengan parameter yang dapat dieksekusi berulang ulang dengan efisien. Prepared statement ketika dieksekusi terdiri dari dua tahap: _prepare_ (template dikirim ke database oleh PHP) dan _execute_ (server mengeksekusi template statement dengan menggunakan variabel yang sudah di _bind_).
 
+```php
+<?php
+if ( ! ($stmt = $mysqli->prepare("INSERT INTO test(id) VALUES (?)"))) {
+  echo 'Prepare gagal: (' . $mysqli->errno . ') ' . $mysqli->error;
+}
+
+$id = 1;
+if ( ! $stmt->bind_param('i', $id)) {
+  echo 'Binding gagal (' . $stmt->errno . ') ' . $stmt->error;
+}
+if ( ! $stmt->execute()) {
+  echo 'Eksekusi gagal: (' . $stmt->errno . ') ' . $stmt->error;
+}
+
+for ($id = 2; $id < 5; $id++) {
+  if ( ! $stmt->execute()) { // PHP hanya mengirim data, statement sudah ada
+    echo 'Eksekusi gagal: (' . $stmt->errno . ') ' . $stmt->error;
+  }
+}
+
+$stmt->close();
+
+$res = $mysqli->query("SELECT id FROM test");
+var_dump($res->fetch_all());
+```
+* Menggunakan prepared statement belum tentu efisien karena kita harus mengirim template ke server dan baru melakukan eksekusi. Jadi pastikan bahwa statement yang digunakan benar-benar lebih efisien jika menggunakan prepared statements.
+
+* __CATATAN__: Untuk multi insert usahakan gunakan sintaks SQL multi insert seperti: ```INSERT INTO test(id) VALUES (1), (2), (3), (4)"```
 
 ### Multiple Statements
 
+* Server database MySQL bisa diset untuk menerima multiple statements dalam satu string statement. Hal ini dapat mengurangi beban lalu lintas dari PHP ke database namun pastikan string yang dikirim ditangani dengan benar.
 
-### Transaction
+* Multiple statements harus dieksekusi dengan ```mysqli::multi_query()``` seperti contoh berikut:
+
+```php
+<?php
+$sql = "CREATE TABLE test(id INT)";
+$sql.= "INSERT INTO test(id) VALUES (1); ";
+
+if ( ! $mysqli->multi_query($sql)) {
+  echo 'Multi query gagal: (' . $mysqli->errno . ') ' . $mysqli->error;
+}
+```
+
+## Praktikum
+
+* Kita akan membuat aplikasi yang menggunakan Session dan database MySQL. User dapat melakukan login, daftar, melihat home, dan melakukan logout. Pastikan server database Anda sudah dijalankan, cek di XAMPP Control Panel.
+
+* Buat project dimanapun dan pastikan PHP development server diaktifkan dengan perintah ```php -S localhost:8080```. Di praktikum kita abaikan tampilan (CSS) karena kita akan lebih fokus ke mekanisme autentifikasi user.
+
+* Tulis ulang dan pahami kode PHP berikut, jika pertanyaan silakan diajukan di edmodo.
+
+  - [Database.php]()
+  - [View.php]()
+  - [template/daftar.php]()
+  - [template/login.php]()
+  - [template/home.php]()
+  - [index.php]()
+
+## Tugas
+
+* Masukkan kode PHP yang Anda tulis ulang dan hasil screenshot perhalaman ke dalam laporan!
+
 
 
 
