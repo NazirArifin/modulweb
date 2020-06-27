@@ -12,7 +12,7 @@ Modul Praktikum Pemrograman Web Program Studi Informatika Universitas Madura
 * [CSS bag. 4 -- Animasi](https://github.com/NazirArifin/modulweb/blob/master/css-4.md)
 * [PHP bag. 1 -- Pengenalan PHP & Templating](https://github.com/NazirArifin/modulweb/blob/master/php-1.md)
 * [PHP bag. 2 -- Memproses Form, Upload File, Manajemen File](https://github.com/NazirArifin/modulweb/blob/master/php-2.md)
-* [PHP bag. 3 -- Session, Cookies dan Database (MySQLi)](https://github.com/NazirArifin/modulweb/blob/master/php-3.md)
+* [PHP bag. 3 -- Session, Cookies dan Database (MySQL)](https://github.com/NazirArifin/modulweb/blob/master/php-3.md)
 * Javascript bag. 1 -- Pengenalan Javascript, Variable, ES6
 * Javascript bag. 2 -- Manipulasi DOM
 * Javascript bag. 3 -- Promise & Asyncronous Request
