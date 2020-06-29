@@ -204,7 +204,9 @@ ALTER TABLE `user`
 COMMIT;
 ```
 
-* [Download repository ini](https://github.com/NazirArifin/modulweb/archive/master.zip), lalu ekstrak, masuk ke folder __```example/phpapp```__. Tulis ulang dan pahami kode-kode PHP didalamnya dan jika pertanyaan silakan diajukan di edmodo.
+* [Download repository ini](https://github.com/NazirArifin/modulweb/archive/master.zip), lalu ekstrak, masuk ke folder __```example/phpapp```__. Tulis ulang dan pahami kode-kode PHP didalamnya dan jika ada pertanyaan silakan diajukan di edmodo.
+
+* Untuk login gunakan email ```admin@example.com``` dan password ```password```. Pada contoh aplikasi tersebut, password tersebut di database tanpa enkripsi, namun akan lebih baik jika password yang tersimpan di database sudah terenkripsi sehingga ketika ada orang mendapatkan isi database dia tidak dapat melihat password dengan mudah.
 
 ## Tugas
 
