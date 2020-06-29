@@ -160,8 +160,8 @@ var_dump($res->fetch_all());
 
 ```php
 <?php
-$sql = "CREATE TABLE test(id INT)";
-$sql.= "INSERT INTO test(id) VALUES (1); ";
+$sql = "CREATE TABLE test(id INT);";
+$sql.= "INSERT INTO test(id) VALUES (1);";
 
 if ( ! $mysqli->multi_query($sql)) {
   echo 'Multi query gagal: (' . $mysqli->errno . ') ' . $mysqli->error;
@@ -174,18 +174,41 @@ if ( ! $mysqli->multi_query($sql)) {
 
 * Buat project dimanapun dan pastikan PHP development server diaktifkan dengan perintah ```php -S localhost:8080```. Di praktikum kita abaikan tampilan (CSS) karena kita akan lebih fokus ke mekanisme autentifikasi user.
 
-* Tulis ulang dan pahami kode PHP berikut, jika pertanyaan silakan diajukan di edmodo.
+* Kita akan menggunakan database ```test``` dan tabel ```user```, untuk itu import kode SQL berikut ke database Anda (bisa menggunakan phpMyAdmin):
 
-  - [Database.php]()
-  - [View.php]()
-  - [template/daftar.php]()
-  - [template/login.php]()
-  - [template/home.php]()
-  - [index.php]()
+```sql
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+--
+-- Database: `test`
+--
+
+CREATE TABLE `user` (
+  `ID_USER` int(11) NOT NULL,
+  `EMAIL_USER` varchar(40) NOT NULL,
+  `PASSWORD_USER` varchar(40) NOT NULL,
+  `NAME_USER` varchar(80) NOT NULL,
+  `STATUS_USER` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO `user` (`ID_USER`, `EMAIL_USER`, `PASSWORD_USER`, `NAME_USER`, `STATUS_USER`) VALUES
+(1, 'admin@example.com', 'password', 'Super Duper User', 1);
+
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`ID_USER`);
+
+ALTER TABLE `user`
+  MODIFY `ID_USER` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+COMMIT;
+```
+
+* [Download repository ini](https://github.com/NazirArifin/modulweb/archive/master.zip), lalu ekstrak, masuk ke folder __```example/phpapp```__. Tulis ulang dan pahami kode-kode PHP didalamnya dan jika pertanyaan silakan diajukan di edmodo.
 
 ## Tugas
 
-* Masukkan kode PHP yang Anda tulis ulang dan hasil screenshot perhalaman ke dalam laporan!
+* Masukkan kode PHP yang Anda tulis dan hasil screenshot aplikasi ke dalam laporan!
 
 
 

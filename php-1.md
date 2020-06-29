@@ -63,7 +63,7 @@ echo $nomor + $label; // outputnya adalah 20, string '1' otomatis 1
 <?php
 $kota = 'Malang';
 $nama = 'kota';
-echo $$nama; // outputnya adalah: Malang
+echo $$nama; // menjadi $kota, outputnya adalah: Malang
 ```
 
 ### Variabel Scope
