@@ -1,4 +1,4 @@
-# Modul 7 - Session, Cookies dan Database (MySQL)
+# Modul 9 - Session, Cookies dan Database (MySQL)
 
 Tujuan Pembelajaran: Mahasiswa mengenal dan memahami metode penyimpanan data menggunakan Session, Cookies dan Database dalam bahasa pemrograman PHP serta menggunakannya dalam pembuatan aplikasi web dinamis
 

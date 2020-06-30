@@ -154,8 +154,7 @@ class Animal {
 $ana = new Animal();
 echo $ana->whoAmI(); // Hi, I am Lion live in cage has 1 child(s)
 ```
-
-* Pada umumnya satu deklarasi class diletakkan pada satu file tersendiri dan untuk membedakan antar class biasanya digunakan namespace.
+* Berbeda dengan Java, untuk mengakses properti dan dan method digunakan operator panah ```->``` seperti pada contoh ```$ana->whoAmI();```. Pada umumnya satu deklarasi class diletakkan pada satu file tersendiri dan untuk membedakan antar class biasanya digunakan namespace.
 
 ### Include, Require, Autoload
 
