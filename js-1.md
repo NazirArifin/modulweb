@@ -61,6 +61,20 @@ console.log(sequence.length); // panjang array
 sequence.push(14); // menambah elemen
 ```
 
+### String
+
+* Bagian tipe data String hampir sama dengan fungsi-fungsi yang ada di Java, namun ada satu hal penting yang perlu diketahui yaitu penggunaan back-tick __`__ (tombolnya dibawah tombol Esc) untuk membuat string. Dengan penggunaan back-tick kita bisa membuat string interpolation (dengan ```${namaVariabel}```) dan juga mendukung multiline string.
+
+```js
+const nama = 'Broto';
+const usia = 28;
+const pesan = `Halo, nama saya ${nama},
+usia saya ${usia}
+....
+`;
+
+```
+
 ### Fungsi (Function)
 
 * Hampir sama dengan PHP, untuk membuat fungsi digunakan kata kunci ```function``` yang diikuti oleh nama fungsinya seperti contoh berikut:
@@ -77,9 +91,62 @@ console.log(perkalian(4, 5)); // lihat di console browser
 
 * Di Javascript Anda akan seringkali menemukan fungsi anonim (Closure) dinama terdapat fungsi tanpa nama yang biasanya dibuat untuk kode yang hanya satu kali saja digunakan (tidak dipakai oleh kode lain).
 
+### Arrow Function
+
+* Arrow function adalah alternatif penulisan fungsi yang biasanya digunakan serta beberapa perbedaan lain seperti binding _this_.
+
+```js
+var elements = [
+  'Hidrogen',
+  'Helium'
+];
+
+// map array
+elements.map(function(elm) {
+  return elm.length;
+});
+
+// dengan arrow function
+elements.map((elm) => {
+  return elm.length;
+});
+
+// jika hanya satu baris dan return bisa disingkat lagi
+elements.map((elm) => elm.length);
+// jika hanya satu argument kurung di argumen bisa dibuang
+elements.map(elm => elm.length);
+```
+
 ### Objects
 
-* Di Javascript kita bisa langsung membuat Object tanpa harus mendefinisikan Class terlebih dahulu. Setelah object terbuat kita juga masih bisa menambahkan method atau properti secara langsung. Untuk mengakses properti dan method digunakan operator dot (titik), sama dengan Java.
+* Di Javascript kita bisa langsung membuat Object tanpa harus mendefinisikan Class terlebih dahulu. Setelah object terbuat kita juga masih bisa menambahkan method atau properti secara langsung. Untuk mengakses properti dan method digunakan operator dot (titik), sama dengan Java atau menggunakan kurung siku [] seperti PHP.
+
+```js
+const person = {
+  name: ['Bob', 'Smith'],
+  age: 32,
+  gender: 'male',
+  bio: function() {
+    alert(this.name[0] + ' ');
+  },
+  greeting: function() {
+    alert('Hi!');
+  }
+};
+console.log(person.age); // dengan dot
+console.log(person['gender']); // dengan kurung siku
+
+/*
+Pola umumnya adalah: { key: value }
+const objectName = {
+  member1Name: member1Value,
+  member2Name: member2Value,
+  member3Name: member3Value
+};
+*/
+```
+
+* Pembuat class di Javascript jika di ES5 menggunakan __function__, sedangkan di ES6 kita bisa menggunakan kata kunci __class__ seperti bahasa pemrograman lain.
 
 ### Events
 
@@ -100,6 +167,171 @@ document.querySelector('button').onclick = function() {
 // });
   </script>
 ```
+
+## Praktikum
+
+* Buat file __index.html__ dan isikan kode berikut:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis JS</title>
+  <style>
+body{
+  font-size: 20px;
+	font-family: sans-serif;
+	color: #333;
+}
+.question{
+	font-weight: 600;
+}
+.answers {
+  margin-bottom: 20px;
+}
+.answers label{
+  display: block;
+}
+#submit{
+	font-family: sans-serif;
+	font-size: 20px;
+	background-color: #279;
+	color: #fff;
+	border: 0px;
+	border-radius: 3px;
+	padding: 20px;
+	cursor: pointer;
+	margin-bottom: 20px;
+}
+#submit:hover{
+	background-color: #38a;
+}
+  </style>
+</head>
+<body>
+  <div id="quiz"></div>
+  <button id="submit">Submit Quiz</button>
+  <div id="results"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+```
+
+* Selanjutnya buat file __script.js__ dan letakkan bersebelahan dengan file __index.html__ sebelumnya. Isi dari __script.js__ adalah:
+
+```js
+document.addEventListener('DOMContentLoaded', function() {
+
+  const quizContainer = document.getElementById('quiz');
+  const resultsContainer = document.getElementById('results');
+  const submitButton = document.getElementById('submit');
+  
+  // daftar pertanyaan berupa object { pertanyaan: '', jawaban: {} }
+  const pertanyaan = [
+    {
+      pertanyaan: "Siapa penemu JavaScript?",
+      jawaban: {
+        a: "Douglas Crockford",
+        b: "Sheryl Sandberg",
+        c: "Brendan Eich"
+      },
+      kunciJawaban: "c"
+    },
+    {
+      pertanyaan: "Yang manakah yang merupakan JavaScript package manager?",
+      jawaban: {
+        a: "Node.js",
+        b: "TypeScript",
+        c: "npm"
+      },
+      kunciJawaban: "c"
+    },
+    {
+      pertanyaan: "Tool manakah yang digunakan untuk kualitas kode Javascript yang baik?",
+      jawaban: {
+        a: "Angular",
+        b: "jQuery",
+        c: "RequireJS",
+        d: "ESLint"
+      },
+      kunciJawaban: "d"
+    }
+  ];
+
+  // fungsi membangun quiz
+  function buatQuiz(){
+    // variabel untuk menampung string output HTML
+    const output = [];
+
+    pertanyaan.forEach((value, key) => {
+      // variabel menampung string opsion
+      const opsi = [];
+
+      for (const huruf in value.jawaban) {
+        opsi.push(
+          `<label>
+            <input type="radio" name="question${key}" value="${huruf}">
+            ${huruf} :
+            ${value.jawaban[huruf]}
+          </label>`
+        );
+      }
+
+      // tambahkan pertanyaan
+      output.push(
+        `<div class="question"> ${value.pertanyaan} </div>
+          <div class="answers"> ${opsi.join('')} </div>`
+      );
+    });
+
+    // gabung array lalu ubah isi dari container dengan HTML baru
+    quizContainer.innerHTML = output.join('');
+  }
+
+  // function menampilkan hasil
+  function tampilkanHasil() {
+
+    // kumpulkan semua jawaban
+    const jawabanContainer = quizContainer.querySelectorAll('.answers');
+
+    // jumlah jawaban benar user
+    let jumlahBenar = 0;
+
+    pertanyaan.forEach((value, key) => {
+
+      const container = jawabanContainer[key];
+      const selector = `input[name=question${key}]:checked`;
+      const jawaban = (container.querySelector(selector) || {}).value;
+
+      // jika jawaban benar
+      if (jawaban == value.kunciJawaban) {
+        jumlahBenar++;
+
+        jawabanContainer[key].style.color = 'lightgreen';
+      } else {
+        jawabanContainer[key].style.color = 'red';
+      }
+
+    });
+
+    jawabanContainer.innerHTML = `${jumlahBenar} dari ${pertanyaan.length}`;
+  }
+
+  // Jalankan aplikasi
+  buatQuiz();
+
+  // Event listeners
+  submitButton.addEventListener('click', tampilkanHasil);
+
+});
+```
+
+## Tugas
+
+* Ketik ulang dan masukkan hasilnya di laporan!
 
 
 
