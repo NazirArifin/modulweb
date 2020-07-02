@@ -325,6 +325,7 @@ switch ($url) {
 
     // jika ada errors, redirect
     if (count($errors) > 0) {
+      @unlink($folder . '/' . $filename);
       header('Location: /form?' . http_build_query(['errors' => $errors]));
     } else {
       // sukses, tugasnya, tampilkan hasil upload disini

@@ -92,3 +92,154 @@ loadMahasiswa().then(data => {
 
 * Kode diatas adalah fungsi ```fetch``` yang digunakan untuk mengambil data JSON (JavaScript Object Notation) yang ada di server ```api.unira.ac.id``` menggunakan method ```GET```. Jika dijalankan di browser Anda akan melihat data mahasiswa dengan NPM yang mirip __2018520__.
 
+## Praktikum
+
+* Dengan menggunakan kode dari Praktikum [Modul 8](https://github.com/NazirArifin/modulweb/blob/master/php-2.md), kita akan memodifikasi file form htmlnya dengan menggunakan JavaScript sehingga tanpa pindah halaman kita bisa mengirim data form dan file ke server.
+
+* Berikut adalah kode file __form.php__:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pendaftaran Beasiswa</title>
+  <style>
+body {
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}
+.container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container form {
+  padding: 20px 20px 10px 20px;
+  background-color: coral;
+  border-radius: 4px;
+  min-width: 450px;
+}
+ul li {
+  font-size: 12px;
+  color: maroon;
+  font-weight: bold;
+}
+h3 {
+  text-align: center;
+  font-size: 22px;
+}
+.input-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+label {
+  font-size: 12px;
+  padding-top: 10px;
+}
+input {
+  width: 300px;
+  padding: 10px 7px;
+  border-radius: 4px;
+  border: 1px solid orangered;
+}
+button {
+  padding: 10px 15px;
+  border-radius: 4px;
+  border: 2px solid orangered;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <form action="/daftar" method="post" enctype="multipart/form-data">
+      <h3>FORM PENDAFTARAN MAHASISWA</h3>
+      <div class="error">
+        <ul>
+          <li>Email tidak valid</li>
+        </ul>
+      </div>
+      <hr>
+      <div class="input-row">
+        <label for="nama">Nama:</label>
+        <div class="input">
+          <input type="text" name="nama" id="nama" minlength="3" maxlength="60" required>
+        </div>
+      </div>
+      <div class="input-row">
+        <label for="email">Email:</label>
+        <div class="input">
+          <input type="email" name="email" id="email" minlength="5" maxlength="60" required>
+        </div>
+      </div>
+      <div class="input-row">
+        <label for="foto">Foto:</label>
+        <div class="input">
+          <input type="file" accept=".jpg,.jpeg,.png" name="foto" id="foto" required>
+        </div>
+      </div>
+      <div class="input-row">
+        <label for=""> </label>
+        <div class="input">
+          <button type="submit">DAFTAR BEASISWA</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+  // tambahkan event click di button
+  document.querySelector('button').addEventListener('click', event => {
+    // cegah submit
+    event.preventDefault();
+
+    const input = document.querySelectorAll('input');
+    // check input nama 
+    if ( ! input[0].checkValidity()) {
+      return alert('Nama tidak valid!');
+    }
+    // check email
+    if ( ! input[1].checkValidity()) {
+      return alert('Email tidak valid!');
+    }
+    // check file
+    if ( ! input[2].checkValidity()) {
+      return alert('File tidak valid!');
+    }
+
+    // data yang akan dikirim, karena ada File maka gunakan FormData
+    const formData = new FormData();
+    formData.append('nama', input[0].value);
+    formData.append('email', input[1].value);
+    formData.append('foto', input[2].files[0]);
+
+    // kirim ke server, tampilkan animasi atau teks loading bila perlu
+    // event.target.innerHTML = 'LOADING...';
+    fetch('/daftar', {
+      method: 'POST',
+      redirect: 'manual',
+      body: formData
+    }).then(response => {
+      // sukses, munculkan pesan
+      // event.target.innerHTML = 'DAFTAR BEASISWA';
+      // kosongkan lagi input
+      alert('Data tersimpan!');
+    }).catch(error => {
+      console.error('Error: ', error);
+    });
+  });
+});
+  </script>
+</body>
+</html>
+```
+
+* Kode __index.php__ dapat Anda ambil dari modul 8. Jika sukses maka file akan berhasil diupload dan tersimpan di folder __upload__.
+
+## Tugas
+
+* Ketik ulang dan masukkan hasilnya ke laporan!
+
