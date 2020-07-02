@@ -95,7 +95,7 @@ elm.addEventListener('click', function() { alert('Hello World!'); });
   - ```firstChild```: node anak pertama
   - ```lastChild```
   - ```nextSibling```: node tetangga berikutnya
-  - ```previousSibling```:
+  - ```previousSibling```
 
 ## Praktikum
 
@@ -107,7 +107,7 @@ elm.addEventListener('click', function() { alert('Hello World!'); });
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Document Object Model</title>
   <style>
 #box {
   width: 300px;
