@@ -1,4 +1,4 @@
-# Modul 10 - Javascript dan Typescript
+# Modul 10 - Pengenalan Javascript
 
 Tujuan Pembelajaran: Mahasiswa mengenal bahasa pemrograman Javascript sebagai bahasa pemrograman sisi client dan dapat menggunakannya dalam pembuatan halaman web yang interaktif
 
