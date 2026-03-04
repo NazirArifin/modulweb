@@ -1,4 +1,4 @@
-# Modul 17 - Frontend Framework dengan Svelte 5 (bag. 2)
+# Modul 12 - Frontend Framework dengan Svelte 5 (bag. 2)
 
 Tujuan Pembelajaran: Mahasiswa memahami konsep Single Page Application (SPA), mampu melakukan integrasi dengan API external menggunakan Svelte 5, dan mengelola state global.
 

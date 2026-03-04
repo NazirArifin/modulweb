@@ -1,116 +1,345 @@
-# Modul 13 - Backend dengan Node.js, Express & TypeScript (bag. 1)
+# Modul 7 - Backend & Data Persistence (Pertemuan 1)
 
-Tujuan Pembelajaran: Mahasiswa mengenal Node.js, framework Express, dan TypeScript, memahami struktur proyek backend modern, dan dapat membangun API sederhana menggunakan ES6 Modules.
+Tujuan Pembelajaran: Mahasiswa mampu membangun API dasar menggunakan Node.js, Express, dan TypeScript dengan struktur proyek yang rapi, pola request-response berbasis controller, koneksi database awal, model dasar, serta endpoint CRUD sederhana.
 
 ## Persiapan
 
-* Pastikan **Node.js** (LTS) sudah terinstal. Cek dengan `node -v`.
-* Kita akan menggunakan **TypeScript** untuk keamanan tipe data dan **ES6 Modules** (`import`/`export`).
-* Buat folder proyek, lalu inisialisasi:
+Pastikan perangkat sudah siap:
+- Node.js versi LTS
+- npm
+- Database MariaDB aktif (lokal atau server)
+- API client (Postman/Insomnia/Thunder Client)
+
+Inisialisasi proyek:
+
 ```bash
 npm init -y
-npm install express
-npm install typescript ts-node @types/node @types/express -D
-```
-* Inisialisasi konfigurasi TypeScript:
-```bash
+npm install express sequelize mariadb
+npm install -D typescript ts-node @types/node @types/express
 npx tsc --init
 ```
-* Edit `tsconfig.json`, pastikan `"target": "ES6"` dan `"module": "ESNext"`.
+
+Saran pengaturan dasar `tsconfig.json`:
+- `target`: `ES2020`
+- `module`: `ESNext`
+- `strict`: `true`
+- `rootDir`: `src`
+- `outDir`: `dist`
+
+---
 
 ## Materi
 
-### Mengapa TypeScript & ES6?
+### 1) Gambaran Arsitektur Backend Sederhana
 
-1. **TypeScript**: Menambahkan "type checking" pada JavaScript, mencegah error umum seperti salah panggil fungsi atau property yang tidak ada.
-2. **ES6 Modules**: Standar modern untuk membagi kode menjadi file-file (`import` dari pada `require`).
+Alur umum aplikasi backend:
+1. Client mengirim HTTP request.
+2. Router memilih endpoint yang sesuai.
+3. Controller memproses request.
+4. Model/database menangani simpan/ambil data.
+5. Server mengembalikan response JSON.
 
-### Struktur Dasar Express dengan TypeScript
+Pemisahan layer ini penting agar kode mudah dirawat dan dikembangkan.
 
-Buat file `src/index.ts`:
+---
+
+### 2) Struktur Proyek Express + TypeScript
+
+Contoh struktur yang direkomendasikan:
+
+```text
+src/
+  index.ts
+  database.ts
+  models/
+    Mahasiswa.ts
+  controllers/
+    mahasiswaController.ts
+  routes/
+    mahasiswaRoutes.ts
+```
+
+Penjelasan singkat:
+- `index.ts`: entry point aplikasi
+- `routes`: definisi endpoint
+- `controllers`: logika request-response
+- `models`: definisi entitas/tabel
+- `database.ts`: konfigurasi koneksi database
+
+---
+
+### 3) Routing dan Request-Response Dasar
+
+Contoh route sederhana:
 
 ```typescript
 import express, { Request, Response } from 'express';
 
 const app = express();
-const port = 3000;
-
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Selamat Datang di API Mahasiswa (TypeScript)!');
-});
-
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+app.get('/health', (req: Request, res: Response) => {
+  return res.status(200).json({ message: 'API aktif' });
 });
 ```
 
-### Request & Response Types
+Objek request yang sering dipakai:
+- `req.params` untuk parameter URL
+- `req.query` untuk query string
+- `req.body` untuk data JSON
 
-Dalam TypeScript, kita bisa mendefinisikan tipe data untuk Request dan Response:
-* `Request`: Mengambil data dari client (`req.params`, `req.body`, `req.query`).
-* `Response`: Mengirim balik data ke client (`res.json`, `res.status`).
+Objek response yang sering dipakai:
+- `res.status(code)` untuk status HTTP
+- `res.json(data)` untuk mengirim JSON
 
-Contoh Interface untuk data:
-```typescript
-interface Mahasiswa {
-  id: number;
-  nama: string;
-  npm: string;
-}
-```
+---
 
-## Praktikum
+### 4) Pola Controller
 
-Kita akan membangun API CRUD sederhana dengan pola Controller.
+Controller berisi logika endpoint, bukan konfigurasi server.
 
-1. **src/controllers/mahasiswaController.ts**:
+Contoh controller:
+
 ```typescript
 import { Request, Response } from 'express';
 
-interface Mahasiswa {
+export async function getAllMahasiswa(req: Request, res: Response) {
+  return res.json({ message: 'Daftar mahasiswa' });
+}
+
+export async function createMahasiswa(req: Request, res: Response) {
+  const { nama, npm } = req.body;
+  if (!nama || !npm) {
+    return res.status(400).json({ message: 'nama dan npm wajib diisi' });
+  }
+
+  return res.status(201).json({ message: 'Mahasiswa dibuat', data: { nama, npm } });
+}
+```
+
+Keuntungan pola ini:
+- route lebih bersih,
+- logika mudah diuji,
+- memudahkan refactor saat aplikasi membesar.
+
+---
+
+### 5) Koneksi Database dari Backend
+
+Contoh file `database.ts`:
+
+```typescript
+import { Sequelize } from 'sequelize';
+
+export const sequelize = new Sequelize('db_modulweb', 'root', 'password', {
+  host: 'localhost',
+  dialect: 'mariadb',
+  logging: false
+});
+```
+
+Contoh pengujian koneksi saat startup:
+
+```typescript
+async function connectDatabase() {
+  try {
+    await sequelize.authenticate();
+    console.log('Koneksi database berhasil');
+  } catch (error) {
+    console.error('Koneksi database gagal:', error);
+    process.exit(1);
+  }
+}
+```
+
+---
+
+### 6) Model Dasar dengan Sequelize
+
+Contoh model `Mahasiswa`:
+
+```typescript
+import { DataTypes, Model, Optional } from 'sequelize';
+import { sequelize } from '../database';
+
+interface MahasiswaAttributes {
   id: number;
   nama: string;
   npm: string;
+  email: string;
 }
 
-let dataMahasiswa: Mahasiswa[] = [
-  { id: 1, nama: 'Ali', npm: '2022001' }
-];
+interface MahasiswaCreation extends Optional<MahasiswaAttributes, 'id'> {}
 
-export const getAll = (req: Request, res: Response) => {
-  res.json(dataMahasiswa);
-};
+export class Mahasiswa extends Model<MahasiswaAttributes, MahasiswaCreation>
+  implements MahasiswaAttributes {
+  public id!: number;
+  public nama!: string;
+  public npm!: string;
+  public email!: string;
+}
 
-export const create = (req: Request, res: Response) => {
-  const newMhs: Mahasiswa = {
-    id: dataMahasiswa.length + 1,
-    ...req.body
-  };
-  dataMahasiswa.push(newMhs);
-  res.status(201).json(newMhs);
-};
+Mahasiswa.init(
+  {
+    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
+    nama: { type: DataTypes.STRING, allowNull: false },
+    npm: { type: DataTypes.STRING, allowNull: false, unique: true },
+    email: { type: DataTypes.STRING, allowNull: false, validate: { isEmail: true } }
+  },
+  { sequelize, modelName: 'mahasiswa', tableName: 'mahasiswa' }
+);
 ```
 
-2. **src/index.ts**:
+---
+
+### 7) API Endpoint CRUD Sederhana
+
+Daftar endpoint minimum:
+- `GET /mahasiswa`
+- `GET /mahasiswa/:id`
+- `POST /mahasiswa`
+- `PUT /mahasiswa/:id`
+- `DELETE /mahasiswa/:id`
+
+Contoh ringkas controller CRUD:
+
+```typescript
+import { Request, Response, NextFunction } from 'express';
+import { Mahasiswa } from '../models/Mahasiswa';
+
+export async function getAll(req: Request, res: Response, next: NextFunction) {
+  try {
+    const data = await Mahasiswa.findAll();
+    return res.json(data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getById(req: Request, res: Response, next: NextFunction) {
+  try {
+    const data = await Mahasiswa.findByPk(req.params.id);
+    if (!data) return res.status(404).json({ message: 'Mahasiswa tidak ditemukan' });
+    return res.json(data);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function create(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { nama, npm, email } = req.body;
+    if (!nama || !npm || !email) {
+      return res.status(400).json({ message: 'nama, npm, email wajib diisi' });
+    }
+
+    const created = await Mahasiswa.create({ nama, npm, email });
+    return res.status(201).json(created);
+  } catch (error) {
+    return next(error);
+  }
+}
+```
+
+---
+
+### 8) Integrasi Route, Controller, dan Server
+
+Contoh `routes/mahasiswaRoutes.ts`:
+
+```typescript
+import { Router } from 'express';
+import * as mahasiswaController from '../controllers/mahasiswaController';
+
+const router = Router();
+
+router.get('/', mahasiswaController.getAll);
+router.get('/:id', mahasiswaController.getById);
+router.post('/', mahasiswaController.create);
+router.put('/:id', mahasiswaController.update);
+router.delete('/:id', mahasiswaController.remove);
+
+export default router;
+```
+
+Contoh `index.ts`:
+
 ```typescript
 import express from 'express';
-import * as mhsController from './controllers/mahasiswaController';
+import mahasiswaRoutes from './routes/mahasiswaRoutes';
+import { sequelize } from './database';
 
 const app = express();
 app.use(express.json());
 
-app.get('/mahasiswa', mhsController.getAll);
-app.post('/mahasiswa', mhsController.create);
+app.use('/mahasiswa', mahasiswaRoutes);
 
-app.listen(3000, () => console.log('Server running on port 3000'));
+sequelize.sync().then(() => {
+  app.listen(3000, () => {
+    console.log('Server berjalan di http://localhost:3000');
+  });
+});
 ```
 
-3. Jalankan dengan: `npx ts-node src/index.ts`.
+---
+
+## Praktikum
+
+### Tugas Praktikum 1 - Setup Proyek dan Struktur
+
+1. Inisialisasi proyek Express + TypeScript.
+2. Buat struktur folder `routes`, `controllers`, `models`, `database`.
+3. Buat endpoint `GET /health` untuk cek server aktif.
+
+Checklist:
+- server berjalan normal
+- endpoint `GET /health` mengembalikan status 200
+- struktur proyek sesuai standar modul
+
+### Tugas Praktikum 2 - Koneksi Database dan Model Dasar
+
+1. Konfigurasikan koneksi Sequelize ke MariaDB.
+2. Buat model `Mahasiswa` (nama, npm, email).
+3. Jalankan `sequelize.sync()` dan verifikasi tabel terbentuk.
+
+Checklist:
+- koneksi database sukses
+- tabel `mahasiswa` terbentuk
+- validasi dasar model aktif
+
+### Tugas Praktikum 3 - CRUD API Sederhana
+
+1. Implementasi endpoint CRUD `mahasiswa`.
+2. Pisahkan route dan controller.
+3. Uji endpoint menggunakan Postman/Insomnia.
+
+Checklist:
+- `GET`, `POST`, `PUT`, `DELETE` berjalan
+- status code sesuai (`200`, `201`, `400`, `404`)
+- response JSON konsisten
+
+---
 
 ## Tugas
 
-1. Tambahkan fitur **Update** dan **Delete** pada `mahasiswaController.ts` dengan menyertakan tipe data TypeScript yang sesuai.
-2. Gunakan **Interface** untuk mendefinisikan struktur data mahasiswa.
-3. Masukkan kode sumber `.ts` dan screenshot pengujian API ke laporan!
+Buat API sederhana manajemen mahasiswa dengan ketentuan berikut:
+
+1. Teknologi:
+   - Node.js + Express + TypeScript
+   - Sequelize + MariaDB
+
+2. Fitur minimum:
+   - endpoint CRUD `mahasiswa`
+   - validasi field wajib (`nama`, `npm`, `email`)
+   - cek data tidak ditemukan pada endpoint detail/update/delete
+
+3. Struktur kode:
+   - pisahkan `routes`, `controllers`, `models`, `database`
+   - gunakan pola request-response yang rapi
+
+4. Output pengumpulan:
+   - source code backend,
+   - dokumentasi endpoint singkat,
+   - screenshot pengujian minimal 5 request.
+
+Catatan: modul ini menjadi fondasi untuk modul minggu berikutnya (pendalaman query, relasi, dan error handling lanjutan).

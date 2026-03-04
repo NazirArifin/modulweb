@@ -1,4 +1,4 @@
-# Modul 15 - Authentication & Security dengan TypeScript
+# Modul 10 - Authentication & Security dengan TypeScript
 
 Tujuan Pembelajaran: Mahasiswa memahami konsep autentikasi berbasis token (JWT), keamanan password dengan hashing menggunakan TypeScript, dan mampu memproteksi endpoint API.
 

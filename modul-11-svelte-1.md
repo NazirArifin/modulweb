@@ -1,4 +1,4 @@
-# Modul 16 - Frontend Framework dengan Svelte 5 (bag. 1)
+# Modul 11 - Frontend Framework dengan Svelte 5 (bag. 1)
 
 Tujuan Pembelajaran: Mahasiswa mengenal Svelte 5 sebagai framework frontend modern, memahami konsep reaktivitas baru (Runes), dan mampu membangun UI modular berbasis komponen.
 

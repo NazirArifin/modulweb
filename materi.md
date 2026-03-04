@@ -59,6 +59,8 @@ Output: Mengambil dan menampilkan data dari API.
 
 Output: Mampu membangun API dasar dengan Node.js, Express, dan koneksi database.
 
+Catatan: Track utama backend adalah Express. Untuk kebutuhan transisi, kelas dapat menggunakan opsi Hybrid Track (Express + PHP) dengan standar penilaian berbasis konsep. Lihat dokumen kebijakan: [hybrid-track-policy.md](hybrid-track-policy.md).
+
 ## Minggu 8 – UTS: Perencanaan Final Project
 ### Materi:
 - Menentukan tema dan masalah yang ingin diselesaikan
@@ -78,6 +80,8 @@ Output: Proposal final project (judul, latar belakang, fitur MVP, wireframe, sta
 - Integrasi controller dengan database untuk alur fitur end-to-end
 
 Output: Mampu mengelola data aplikasi secara konsisten dari API ke database.
+
+Catatan: Implementasi pada jalur PHP (jika digunakan) harus memenuhi kontrak API dan capaian konsep yang setara dengan jalur Express.
 
 ## Minggu 10 – Authentication & Security
 
