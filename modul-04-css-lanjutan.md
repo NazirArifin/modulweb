@@ -1,45 +1,94 @@
-# Modul 4 - CSS Modern (Flexbox & Animasi)
+# Modul 4 - CSS Lanjutan: Animasi, Flexbox, dan Grid
 
-Tujuan Pembelajaran: Mahasiswa mampu menggunakan Flexbox untuk layout responsif dan menambahkan animasi CSS untuk meningkatkan UX.
+Tujuan Pembelajaran: Mahasiswa mampu membangun layout modern dan interaktif menggunakan CSS Animation, Flexbox, dan CSS Grid.
 
 ## Materi
 
-### Flexbox Layout
-Flexbox mempermudah pengaturan elemen dalam satu dimensi (baris atau kolom).
-- `display: flex;` (pada parent)
-- `justify-content`: perataan horizontal.
-- `align-items`: perataan vertikal.
+### 1) CSS Animation
 
-### Animasi CSS
-Menggunakan `@keyframes` untuk transisi status elemen.
+Animasi CSS dapat dibuat dengan `@keyframes` dan properti `animation`.
+
+Contoh:
+
 ```css
-@keyframes muncul {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+  animation: fadeIn 0.6s ease-out;
 }
 ```
 
-## Praktikum
+### 2) Flexbox
 
-### 1. Navbar Responsif (Flexbox)
+Flexbox efektif untuk layout satu dimensi (baris/kolom).
+
+Properti inti:
+- pada parent: `display: flex`, `flex-direction`, `justify-content`, `align-items`, `gap`
+- pada child: `flex`, `align-self`
+
+Contoh:
+
 ```css
 .navbar {
   display: flex;
   justify-content: space-between;
-  background: #333;
-  color: white;
-  padding: 1rem;
+  align-items: center;
+  gap: 16px;
 }
 ```
 
-### 2. Animasi Sederhana
+### 3) CSS Grid
+
+Grid cocok untuk layout dua dimensi (baris dan kolom).
+
+Properti inti:
+- `display: grid`
+- `grid-template-columns`
+- `grid-template-rows`
+- `gap`
+
+Contoh:
+
 ```css
-.tombol:hover {
-  animation: goyang 0.5s infinite;
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
 }
 ```
+
+---
+
+## Praktikum
+
+### Tugas Praktikum 1 - Efek Animasi
+
+1. Buat satu tombol dan satu kartu konten.
+2. Beri efek `hover` pada tombol.
+3. Terapkan animasi `fadeIn` pada kartu saat halaman dimuat.
+
+### Tugas Praktikum 2 - Layout Flexbox
+
+1. Buat navbar dengan logo di kiri dan menu di kanan.
+2. Buat section daftar fitur menggunakan flex dengan 3 item sejajar.
+3. Ubah menjadi satu kolom pada layar kecil menggunakan media query.
+
+### Tugas Praktikum 3 - Layout Grid
+
+1. Buat layout dashboard sederhana: header, sidebar, content, footer.
+2. Gunakan `grid-template-areas` atau `grid-template-columns`.
+3. Pastikan jarak antarblok rapi menggunakan `gap`.
+
+---
 
 ## Tugas
-1. Buat layout landing page sederhana dengan Header, Main Content, Sidebar, dan Footer menggunakan Flexbox.
-2. Tambahkan efek animasi saat mouse diarahkan ke elemen tertentu.
-3. Pastikan layout berubah (menjadi kolom) saat dibuka di perangkat mobile (Media Query).
+
+1. Buat halaman landing page sederhana dengan ketentuan:
+   - bagian hero menggunakan Flexbox,
+   - bagian daftar konten/kartu menggunakan Grid,
+   - minimal satu animasi CSS (`@keyframes` atau transisi).
+2. Tambahkan media query agar tampilan tetap nyaman di layar kecil.
+3. Kumpulkan source code dan screenshot hasil tampilan.
