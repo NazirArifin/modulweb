@@ -1,6 +1,6 @@
 # Modul 7 - Backend & Data Persistence (Pertemuan 1)
 
-Tujuan Pembelajaran: Mahasiswa mampu membangun API dasar menggunakan Node.js, Express, dan TypeScript dengan struktur proyek yang rapi, pola request-response berbasis controller, koneksi database awal, model dasar, serta endpoint CRUD sederhana.
+Tujuan Pembelajaran: Mahasiswa mampu membangun API dasar menggunakan Node.js, Express, dan TypeScript dengan struktur proyek yang rapi, pola request-response berbasis controller, koneksi database awal, schema dasar menggunakan Drizzle ORM, serta endpoint CRUD sederhana.
 
 ## Persiapan
 
@@ -14,8 +14,8 @@ Inisialisasi proyek:
 
 ```bash
 npm init -y
-npm install express sequelize mariadb
-npm install -D typescript ts-node tsx @types/node @types/express
+npm install express drizzle-orm mysql2
+npm install -D typescript ts-node tsx drizzle-kit @types/node @types/express
 npx tsc --init
 ```
 
@@ -26,7 +26,7 @@ Saran pengaturan dasar `tsconfig.json`:
 - `rootDir`: `src`
 - `outDir`: `dist`
 
-Tambahkan script di `package.json` untuk menjalankan server:
+Tambahkan script di `package.json` untuk menjalankan server dan migration:
 
 ```json
   ...
@@ -34,6 +34,8 @@ Tambahkan script di `package.json` untuk menjalankan server:
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   ...
@@ -49,35 +51,37 @@ Alur umum aplikasi backend:
 1. Client mengirim HTTP request.
 2. Router memilih endpoint yang sesuai.
 3. Controller memproses request.
-4. Model/database menangani simpan/ambil data.
+4. Layer data (Drizzle + database) menangani simpan/ambil data.
 5. Server mengembalikan response JSON.
 
 Pemisahan layer ini penting agar kode mudah dirawat dan dikembangkan.
 
 ---
 
-### 2) Struktur Proyek Express + TypeScript
+### 2) Struktur Proyek Express + TypeScript + Drizzle
 
 Contoh struktur yang direkomendasikan:
 
 ```text
 src/
   index.ts
-  database.ts
-  models/
-    Mahasiswa.ts
   controllers/
     mahasiswaController.ts
   routes/
     mahasiswaRoutes.ts
+  db/
+    index.ts
+    schema.ts
+drizzle.config.ts
 ```
 
 Penjelasan singkat:
 - `index.ts`: entry point aplikasi
 - `routes`: definisi endpoint
 - `controllers`: logika request-response
-- `models`: definisi entitas/tabel
-- `database.ts`: konfigurasi koneksi database
+- `db/schema.ts`: definisi tabel dan tipe data
+- `db/index.ts`: koneksi database dan inisialisasi Drizzle
+- `drizzle.config.ts`: konfigurasi migration
 
 ---
 
@@ -120,7 +124,7 @@ Contoh controller:
 ```typescript
 import { Request, Response } from 'express';
 
-export async function getAllMahasiswa(req: Request, res: Response) {
+export async function getAllMahasiswa(_req: Request, res: Response) {
   return res.json({ message: 'Daftar mahasiswa' });
 }
 
@@ -141,26 +145,35 @@ Keuntungan pola ini:
 
 ---
 
-### 5) Koneksi Database dari Backend
+### 5) Koneksi Database dengan Drizzle
 
-Contoh file `database.ts`:
+Contoh file `src/db/index.ts`:
 
 ```typescript
-import { Sequelize } from 'sequelize';
+import mysql from 'mysql2/promise';
+import { drizzle } from 'drizzle-orm/mysql2';
+import * as schema from './schema';
 
-export const sequelize = new Sequelize('db_modulweb', 'root', 'password', {
+const pool = mysql.createPool({
   host: 'localhost',
-  dialect: 'mariadb',
-  logging: false
+  user: 'root',
+  password: 'password',
+  database: 'db_modulweb',
+  connectionLimit: 10
 });
+
+export const db = drizzle(pool, { schema, mode: 'default' });
 ```
 
 Contoh pengujian koneksi saat startup:
 
 ```typescript
+import { db } from './db';
+import { sql } from 'drizzle-orm';
+
 async function connectDatabase() {
   try {
-    await sequelize.authenticate();
+    await db.execute(sql`SELECT 1`);
     console.log('Koneksi database berhasil');
   } catch (error) {
     console.error('Koneksi database gagal:', error);
@@ -171,40 +184,47 @@ async function connectDatabase() {
 
 ---
 
-### 6) Model Dasar dengan Sequelize
+### 6) Schema Dasar dengan Drizzle
 
-Contoh model `Mahasiswa`:
+Contoh schema tabel `mahasiswa` di `src/db/schema.ts`:
 
 ```typescript
-import { DataTypes, Model, Optional } from 'sequelize';
-import { sequelize } from '../database';
+import { int, mysqlTable, varchar } from 'drizzle-orm/mysql-core';
 
-interface MahasiswaAttributes {
-  id: number;
-  nama: string;
-  npm: string;
-  email: string;
-}
+export const mahasiswa = mysqlTable('mahasiswa', {
+  id: int('id').autoincrement().primaryKey(),
+  nama: varchar('nama', { length: 100 }).notNull(),
+  npm: varchar('npm', { length: 20 }).notNull().unique(),
+  email: varchar('email', { length: 100 }).notNull().unique()
+});
 
-interface MahasiswaCreation extends Optional<MahasiswaAttributes, 'id'> {}
+export type Mahasiswa = typeof mahasiswa.$inferSelect;
+export type NewMahasiswa = typeof mahasiswa.$inferInsert;
+```
 
-export class Mahasiswa extends Model<MahasiswaAttributes, MahasiswaCreation>
-  implements MahasiswaAttributes {
-  public id!: number;
-  public nama!: string;
-  public npm!: string;
-  public email!: string;
-}
+Contoh `drizzle.config.ts`:
 
-Mahasiswa.init(
-  {
-    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
-    nama: { type: DataTypes.STRING, allowNull: false },
-    npm: { type: DataTypes.STRING, allowNull: false, unique: true },
-    email: { type: DataTypes.STRING, allowNull: false, validate: { isEmail: true } }
-  },
-  { sequelize, modelName: 'mahasiswa', tableName: 'mahasiswa' }
-);
+```typescript
+import { defineConfig } from 'drizzle-kit';
+
+export default defineConfig({
+  schema: './src/db/schema.ts',
+  out: './drizzle',
+  dialect: 'mysql',
+  dbCredentials: {
+    host: 'localhost',
+    user: 'root',
+    password: 'password',
+    database: 'db_modulweb'
+  }
+});
+```
+
+Jalankan migration:
+
+```bash
+npm run db:generate
+npm run db:migrate
 ```
 
 ---
@@ -218,15 +238,21 @@ Daftar endpoint minimum:
 - `PUT /mahasiswa/:id`
 - `DELETE /mahasiswa/:id`
 
-Contoh ringkas controller CRUD:
+Contoh ringkas controller CRUD dengan Drizzle:
 
 ```typescript
 import { Request, Response, NextFunction } from 'express';
-import { Mahasiswa } from '../models/Mahasiswa';
+import { eq } from 'drizzle-orm';
+import { db } from '../db';
+import { mahasiswa } from '../db/schema';
 
-export async function getAll(req: Request, res: Response, next: NextFunction) {
+function isValidEmail(email: string) {
+  return /^\S+@\S+\.\S+$/.test(email);
+}
+
+export async function getAll(_req: Request, res: Response, next: NextFunction) {
   try {
-    const data = await Mahasiswa.findAll();
+    const data = await db.select().from(mahasiswa);
     return res.json(data);
   } catch (error) {
     return next(error);
@@ -235,9 +261,17 @@ export async function getAll(req: Request, res: Response, next: NextFunction) {
 
 export async function getById(req: Request, res: Response, next: NextFunction) {
   try {
-    const data = await Mahasiswa.findByPk(req.params.id);
-    if (!data) return res.status(404).json({ message: 'Mahasiswa tidak ditemukan' });
-    return res.json(data);
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ message: 'id harus berupa angka' });
+    }
+
+    const data = await db.select().from(mahasiswa).where(eq(mahasiswa.id, id)).limit(1);
+    if (!data[0]) {
+      return res.status(404).json({ message: 'Mahasiswa tidak ditemukan' });
+    }
+
+    return res.json(data[0]);
   } catch (error) {
     return next(error);
   }
@@ -246,12 +280,67 @@ export async function getById(req: Request, res: Response, next: NextFunction) {
 export async function create(req: Request, res: Response, next: NextFunction) {
   try {
     const { nama, npm, email } = req.body;
+
     if (!nama || !npm || !email) {
       return res.status(400).json({ message: 'nama, npm, email wajib diisi' });
     }
 
-    const created = await Mahasiswa.create({ nama, npm, email });
-    return res.status(201).json(created);
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: 'format email tidak valid' });
+    }
+
+    await db.insert(mahasiswa).values({ nama, npm, email });
+    const created = await db.select().from(mahasiswa).where(eq(mahasiswa.npm, npm)).limit(1);
+
+    return res.status(201).json(created[0]);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function update(req: Request, res: Response, next: NextFunction) {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ message: 'id harus berupa angka' });
+    }
+
+    const { nama, npm, email } = req.body;
+    if (!nama || !npm || !email) {
+      return res.status(400).json({ message: 'nama, npm, email wajib diisi' });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: 'format email tidak valid' });
+    }
+
+    const existing = await db.select().from(mahasiswa).where(eq(mahasiswa.id, id)).limit(1);
+    if (!existing[0]) {
+      return res.status(404).json({ message: 'Mahasiswa tidak ditemukan' });
+    }
+
+    await db.update(mahasiswa).set({ nama, npm, email }).where(eq(mahasiswa.id, id));
+    const updated = await db.select().from(mahasiswa).where(eq(mahasiswa.id, id)).limit(1);
+    return res.json(updated[0]);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function remove(req: Request, res: Response, next: NextFunction) {
+  try {
+    const id = Number(req.params.id);
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ message: 'id harus berupa angka' });
+    }
+
+    const existing = await db.select().from(mahasiswa).where(eq(mahasiswa.id, id)).limit(1);
+    if (!existing[0]) {
+      return res.status(404).json({ message: 'Mahasiswa tidak ditemukan' });
+    }
+
+    await db.delete(mahasiswa).where(eq(mahasiswa.id, id));
+    return res.json({ message: 'Mahasiswa berhasil dihapus' });
   } catch (error) {
     return next(error);
   }
@@ -283,18 +372,26 @@ Contoh `index.ts`:
 
 ```typescript
 import express from 'express';
+import { sql } from 'drizzle-orm';
 import mahasiswaRoutes from './routes/mahasiswaRoutes';
-import { sequelize } from './database';
+import { db } from './db';
 
 const app = express();
 app.use(express.json());
 
+app.get('/health', async (_req, res) => {
+  try {
+    await db.execute(sql`SELECT 1`);
+    return res.json({ status: 'ok' });
+  } catch {
+    return res.status(500).json({ status: 'error' });
+  }
+});
+
 app.use('/mahasiswa', mahasiswaRoutes);
 
-sequelize.sync().then(() => {
-  app.listen(3000, () => {
-    console.log('Server berjalan di http://localhost:3000');
-  });
+app.listen(3000, () => {
+  console.log('Server berjalan di http://localhost:3000');
 });
 ```
 
@@ -304,8 +401,8 @@ sequelize.sync().then(() => {
 
 ### Tugas Praktikum 1 - Setup Proyek dan Struktur
 
-1. Inisialisasi proyek Express + TypeScript.
-2. Buat struktur folder `routes`, `controllers`, `models`, `database`.
+1. Inisialisasi proyek Express + TypeScript + Drizzle.
+2. Buat struktur folder `routes`, `controllers`, `db`.
 3. Buat endpoint `GET /health` untuk cek server aktif.
 
 Checklist:
@@ -313,20 +410,20 @@ Checklist:
 - endpoint `GET /health` mengembalikan status 200
 - struktur proyek sesuai standar modul
 
-### Tugas Praktikum 2 - Koneksi Database dan Model Dasar
+### Tugas Praktikum 2 - Koneksi Database dan Schema Dasar
 
-1. Konfigurasikan koneksi Sequelize ke MariaDB.
-2. Buat model `Mahasiswa` (nama, npm, email).
-3. Jalankan `sequelize.sync()` dan verifikasi tabel terbentuk.
+1. Konfigurasikan koneksi Drizzle ke MariaDB.
+2. Buat schema tabel `mahasiswa` (nama, npm, email).
+3. Jalankan migration Drizzle dan verifikasi tabel terbentuk.
 
 Checklist:
 - koneksi database sukses
 - tabel `mahasiswa` terbentuk
-- validasi dasar model aktif
+- migration berhasil dijalankan
 
 ### Tugas Praktikum 3 - CRUD API Sederhana
 
-1. Implementasi endpoint CRUD `mahasiswa`.
+1. Implementasi endpoint CRUD `mahasiswa` dengan Drizzle.
 2. Pisahkan route dan controller.
 3. Uji endpoint menggunakan Postman/Insomnia.
 
@@ -343,7 +440,7 @@ Buat API sederhana manajemen mahasiswa dengan ketentuan berikut:
 
 1. Teknologi:
    - Node.js + Express + TypeScript
-   - Sequelize + MariaDB
+   - Drizzle ORM + MariaDB
 
 2. Fitur minimum:
    - endpoint CRUD `mahasiswa`
@@ -351,8 +448,9 @@ Buat API sederhana manajemen mahasiswa dengan ketentuan berikut:
    - cek data tidak ditemukan pada endpoint detail/update/delete
 
 3. Struktur kode:
-   - pisahkan `routes`, `controllers`, `models`, `database`
+   - pisahkan `routes`, `controllers`, `db`
    - gunakan pola request-response yang rapi
+   - gunakan migration Drizzle untuk pembentukan tabel
 
 4. Output pengumpulan:
    - source code backend,
