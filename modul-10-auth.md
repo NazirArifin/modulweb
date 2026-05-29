@@ -43,13 +43,16 @@ Kita akan membuat fitur Login dan Middleware autentikasi.
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
+import { eq } from 'drizzle-orm';
+import { db } from '../db';
+import { users } from '../db/schema';
 
 const SECRET_KEY = 'RAHASIA_NEGARA';
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ where: { email } });
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  const user = result[0];
 
   if (user && await bcrypt.compare(password, user.password)) {
     const token = jwt.sign({ id: user.id, email: user.email }, SECRET_KEY, { expiresIn: '1h' });

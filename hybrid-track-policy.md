@@ -29,7 +29,7 @@ Tujuan kebijakan ini adalah menjaga **keadilan penilaian berbasis konsep**, buka
 
 ### Track A (Default): Express
 - Cocok untuk mahasiswa yang ingin jalur modern JavaScript/TypeScript.
-- Stack contoh: Express + Sequelize + MariaDB + JWT.
+- Stack contoh: Express + Drizzle ORM + MariaDB + JWT.
 
 ### Track B (Alternatif): PHP
 - Cocok untuk mahasiswa yang masih transisi dari PHP dasar.
@@ -71,7 +71,7 @@ Agar adil, kedua track harus memenuhi kontrak API yang setara.
 
 | Minggu | Konsep | Track A (Express) | Track B (PHP) |
 |---|---|---|---|
-| 7 | Routing + CRUD dasar | `Router`, controller, model Sequelize | Router PHP/framework, controller, model/query |
+| 7 | Routing + CRUD dasar | `Router`, controller, schema/query Drizzle | Router PHP/framework, controller, model/query |
 | 9 | Relasi + validasi + error handling | association, validation, middleware error | relasi model/query, validator, error handler |
 | 10 | Authentication & security | bcrypt + JWT middleware | password_hash + JWT/auth middleware |
 | 13 | Integrasi fullstack | API + frontend integration | API + frontend integration |
