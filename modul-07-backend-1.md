@@ -15,16 +15,29 @@ Inisialisasi proyek:
 ```bash
 npm init -y
 npm install express sequelize mariadb
-npm install -D typescript ts-node @types/node @types/express
+npm install -D typescript ts-node tsx @types/node @types/express
 npx tsc --init
 ```
 
 Saran pengaturan dasar `tsconfig.json`:
-- `target`: `ES2020`
-- `module`: `ESNext`
+- `target`: `ES2025`
+- `module`: `nodenext`
 - `strict`: `true`
 - `rootDir`: `src`
 - `outDir`: `dist`
+
+Tambahkan script di `package.json` untuk menjalankan server:
+
+```json
+  ...
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  ...
+```
 
 ---
 
@@ -70,16 +83,20 @@ Penjelasan singkat:
 
 ### 3) Routing dan Request-Response Dasar
 
-Contoh route sederhana:
+Contoh route sederhana di `index.ts`:
 
 ```typescript
-import express, { Request, Response } from 'express';
+import express from 'express';
 
 const app = express();
-app.use(express.json());
+const port = 3000;
 
-app.get('/health', (req: Request, res: Response) => {
-  return res.status(200).json({ message: 'API aktif' });
+app.get('/', (_req, res) => {
+  res.json({ message: 'Hello, World!' });
+});
+
+app.listen(port, () => {
+  console.log(`Server berjalan di http://localhost:${port}`);
 });
 ```
 
