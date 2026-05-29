@@ -17,29 +17,36 @@ Pada pertemuan ini, fokus kita adalah:
 
 ---
 
-### 2) Konfigurasi Koneksi ORM (Sequelize + MariaDB)
+### 2) Konfigurasi Koneksi ORM (Drizzle + MariaDB)
 
 Instal dependensi utama:
 
 ```bash
-npm install sequelize mariadb
+npm install drizzle-orm mysql2
+npm install -D drizzle-kit
 ```
 
 Contoh koneksi:
 
 ```typescript
-import { Sequelize } from 'sequelize';
+import mysql from 'mysql2/promise';
+import { drizzle } from 'drizzle-orm/mysql2';
+import * as schema from './schema';
 
-export const sequelize = new Sequelize('db_modulweb', 'root', 'password', {
+const pool = mysql.createPool({
   host: 'localhost',
-  dialect: 'mariadb',
-  logging: false
+  user: 'root',
+  password: 'password',
+  database: 'db_modulweb',
+  connectionLimit: 10
 });
+
+export const db = drizzle(pool, { schema, mode: 'default' });
 ```
 
 Saran:
 - gunakan environment variable untuk kredensial,
-- matikan `logging` saat produksi,
+- gunakan migration Drizzle agar skema konsisten,
 - selalu tangani error koneksi saat aplikasi startup.
 
 ---
@@ -48,84 +55,57 @@ Saran:
 
 Kasus: satu **Dosen** dapat mengampu banyak **MataKuliah** (One-to-Many).
 
-#### A. Definisi model `Dosen`
+#### A. Definisi schema `Dosen`
 
 ```typescript
-import { DataTypes, Model, Optional } from 'sequelize';
-import { sequelize } from '../database';
+import { int, mysqlTable, varchar } from 'drizzle-orm/mysql-core';
 
-interface DosenAttributes {
-  id: number;
-  nama: string;
-  email: string;
-}
-
-interface DosenCreation extends Optional<DosenAttributes, 'id'> {}
-
-export class Dosen extends Model<DosenAttributes, DosenCreation>
-  implements DosenAttributes {
-  public id!: number;
-  public nama!: string;
-  public email!: string;
-}
-
-Dosen.init(
-  {
-    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
-    nama: { type: DataTypes.STRING, allowNull: false },
-    email: { type: DataTypes.STRING, allowNull: false, unique: true, validate: { isEmail: true } }
-  },
-  { sequelize, modelName: 'dosen', tableName: 'dosen' }
-);
+export const dosen = mysqlTable('dosen', {
+  id: int('id').autoincrement().primaryKey(),
+  nama: varchar('nama', { length: 100 }).notNull(),
+  email: varchar('email', { length: 100 }).notNull().unique()
+});
 ```
 
-#### B. Definisi model `MataKuliah`
+#### B. Definisi schema `MataKuliah`
 
 ```typescript
-import { DataTypes, Model, Optional } from 'sequelize';
-import { sequelize } from '../database';
+import { int, mysqlTable, varchar } from 'drizzle-orm/mysql-core';
+import { dosen } from './dosen';
 
-interface MataKuliahAttributes {
-  id: number;
-  nama: string;
-  sks: number;
-  dosenId: number;
-}
-
-interface MataKuliahCreation extends Optional<MataKuliahAttributes, 'id'> {}
-
-export class MataKuliah extends Model<MataKuliahAttributes, MataKuliahCreation>
-  implements MataKuliahAttributes {
-  public id!: number;
-  public nama!: string;
-  public sks!: number;
-  public dosenId!: number;
-}
-
-MataKuliah.init(
-  {
-    id: { type: DataTypes.INTEGER.UNSIGNED, autoIncrement: true, primaryKey: true },
-    nama: { type: DataTypes.STRING, allowNull: false },
-    sks: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false, validate: { min: 1, max: 6 } },
-    dosenId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: false }
-  },
-  { sequelize, modelName: 'mata_kuliah', tableName: 'mata_kuliah' }
-);
+export const mataKuliah = mysqlTable('mata_kuliah', {
+  id: int('id').autoincrement().primaryKey(),
+  nama: varchar('nama', { length: 120 }).notNull(),
+  sks: int('sks').notNull(),
+  dosenId: int('dosen_id')
+    .notNull()
+    .references(() => dosen.id)
+});
 ```
 
 #### C. Definisi relasi
 
 ```typescript
-import { Dosen } from './dosen';
-import { MataKuliah } from './mataKuliah';
+import { relations } from 'drizzle-orm';
+import { dosen } from './dosen';
+import { mataKuliah } from './mataKuliah';
 
-Dosen.hasMany(MataKuliah, { foreignKey: 'dosenId', as: 'mataKuliah' });
-MataKuliah.belongsTo(Dosen, { foreignKey: 'dosenId', as: 'dosen' });
+export const dosenRelations = relations(dosen, ({ many }) => ({
+  mataKuliah: many(mataKuliah)
+}));
+
+export const mataKuliahRelations = relations(mataKuliah, ({ one }) => ({
+  dosen: one(dosen, {
+    fields: [mataKuliah.dosenId],
+    references: [dosen.id]
+  })
+}));
 ```
 
 Catatan:
-- `as` harus konsisten saat dipakai di query `include`.
-- gunakan `foreignKey` yang eksplisit agar mudah dibaca.
+- nama kolom foreign key sebaiknya eksplisit (mis. `dosen_id`),
+- relasi Drizzle membantu query relasional lebih terstruktur,
+- tetap gunakan migration agar foreign key benar-benar terbentuk di database.
 
 ---
 
@@ -134,43 +114,56 @@ Catatan:
 #### A. Filter, sorting, dan pagination
 
 ```typescript
-import { Op } from 'sequelize';
-import { Dosen } from '../models/dosen';
+import { and, asc, count, desc, like } from 'drizzle-orm';
+import { db } from '../db';
+import { dosen } from '../db/schema';
 
 const page = Number(req.query.page ?? 1);
 const limit = Number(req.query.limit ?? 10);
 const keyword = String(req.query.q ?? '');
+const sortDir = String(req.query.sortDir ?? 'asc').toLowerCase();
 
-const data = await Dosen.findAndCountAll({
-  where: {
-    nama: { [Op.like]: `%${keyword}%` }
-  },
-  order: [['nama', 'ASC']],
-  limit,
-  offset: (page - 1) * limit
-});
+const conditions = keyword ? like(dosen.nama, `%${keyword}%`) : undefined;
+
+const rows = await db
+  .select({ id: dosen.id, nama: dosen.nama, email: dosen.email })
+  .from(dosen)
+  .where(conditions)
+  .orderBy(sortDir === 'desc' ? desc(dosen.nama) : asc(dosen.nama))
+  .limit(limit)
+  .offset((page - 1) * limit);
+
+const [{ total }] = await db
+  .select({ total: count() })
+  .from(dosen)
+  .where(conditions);
+
+return res.json({ rows, count: total, page, limit });
 ```
 
 #### B. Eager loading relasi
 
 ```typescript
-const dosenDenganMatkul = await Dosen.findAll({
-  include: [
-    {
-      association: 'mataKuliah',
-      attributes: ['id', 'nama', 'sks']
+const dosenDenganMatkul = await db.query.dosen.findMany({
+  with: {
+    mataKuliah: {
+      columns: { id: true, nama: true, sks: true }
     }
-  ]
+  }
 });
 ```
 
 #### C. Select atribut tertentu
 
 ```typescript
-const daftar = await MataKuliah.findAll({
-  attributes: ['id', 'nama', 'sks'],
-  order: [['sks', 'DESC']]
-});
+import { db } from '../db';
+import { mataKuliah } from '../db/schema';
+import { desc } from 'drizzle-orm';
+
+const daftar = await db
+  .select({ id: mataKuliah.id, nama: mataKuliah.nama, sks: mataKuliah.sks })
+  .from(mataKuliah)
+  .orderBy(desc(mataKuliah.sks));
 ```
 
 ---
@@ -206,12 +199,16 @@ Gunakan pola middleware error agar response seragam:
 import { Request, Response, NextFunction } from 'express';
 
 export function errorHandler(err: any, req: Request, res: Response, next: NextFunction) {
-  if (err.name === 'SequelizeValidationError') {
-    return res.status(400).json({ message: 'Validasi gagal', details: err.errors });
+  if (err?.statusCode) {
+    return res.status(err.statusCode).json({ message: err.message });
   }
 
-  if (err.name === 'SequelizeUniqueConstraintError') {
-    return res.status(409).json({ message: 'Data duplikat', details: err.errors });
+  if (err?.code === 'ER_DUP_ENTRY') {
+    return res.status(409).json({ message: 'Data duplikat' });
+  }
+
+  if (err?.code === 'ER_NO_REFERENCED_ROW_2') {
+    return res.status(400).json({ message: 'Foreign key tidak valid' });
   }
 
   return res.status(500).json({ message: 'Internal server error' });
@@ -231,8 +228,9 @@ Contoh endpoint membuat mata kuliah dan memuat data dosen terkait:
 
 ```typescript
 import { Request, Response, NextFunction } from 'express';
-import { Dosen } from '../models/dosen';
-import { MataKuliah } from '../models/mataKuliah';
+import { and, eq } from 'drizzle-orm';
+import { db } from '../db';
+import { dosen, mataKuliah } from '../db/schema';
 
 export async function createMataKuliah(req: Request, res: Response, next: NextFunction) {
   try {
@@ -242,17 +240,40 @@ export async function createMataKuliah(req: Request, res: Response, next: NextFu
       return res.status(400).json({ message: 'nama, sks, dosenId wajib diisi' });
     }
 
-    const dosen = await Dosen.findByPk(dosenId);
-    if (!dosen) {
+    if (Number(sks) < 1 || Number(sks) > 6) {
+      return res.status(400).json({ message: 'sks harus di antara 1 sampai 6' });
+    }
+
+    const foundDosen = await db.select().from(dosen).where(eq(dosen.id, Number(dosenId))).limit(1);
+    if (!foundDosen[0]) {
       return res.status(404).json({ message: 'Dosen tidak ditemukan' });
     }
 
-    const created = await MataKuliah.create({ nama, sks, dosenId });
-    const result = await MataKuliah.findByPk(created.id, {
-      include: [{ association: 'dosen', attributes: ['id', 'nama', 'email'] }]
+    const insertResult = await db.insert(mataKuliah).values({
+      nama,
+      sks: Number(sks),
+      dosenId: Number(dosenId)
     });
 
-    return res.status(201).json(result);
+    const insertedId = Number(insertResult[0].insertId);
+
+    const result = await db
+      .select({
+        id: mataKuliah.id,
+        nama: mataKuliah.nama,
+        sks: mataKuliah.sks,
+        dosen: {
+          id: dosen.id,
+          nama: dosen.nama,
+          email: dosen.email
+        }
+      })
+      .from(mataKuliah)
+      .innerJoin(dosen, eq(mataKuliah.dosenId, dosen.id))
+      .where(and(eq(mataKuliah.id, insertedId), eq(dosen.id, Number(dosenId))))
+      .limit(1);
+
+    return res.status(201).json(result[0]);
   } catch (err) {
     return next(err);
   }
@@ -272,9 +293,9 @@ Urutan alur endpoint:
 
 ### Tugas Praktikum 1 - Membuat Model Relasi
 
-1. Buat model `Dosen` dan `MataKuliah` dengan Sequelize + TypeScript.
-2. Definisikan relasi One-to-Many (`Dosen.hasMany`, `MataKuliah.belongsTo`).
-3. Lakukan `sequelize.sync()` dan pastikan tabel terbentuk.
+1. Buat schema `Dosen` dan `MataKuliah` dengan Drizzle + TypeScript.
+2. Definisikan relasi One-to-Many (foreign key `mata_kuliah.dosen_id` -> `dosen.id`).
+3. Jalankan migration Drizzle dan pastikan tabel terbentuk.
 
 Checklist:
 - tabel `dosen` dan `mata_kuliah` berhasil dibuat
@@ -287,7 +308,7 @@ Checklist:
    - filter nama (`q`),
    - sorting (`sortBy`, `sortDir`),
    - pagination (`page`, `limit`).
-2. Buat endpoint daftar dosen beserta mata kuliah (`include`).
+2. Buat endpoint daftar dosen beserta mata kuliah (`with` relasi / join).
 3. Batasi atribut response agar tidak berlebihan.
 
 Checklist:
@@ -330,7 +351,7 @@ Bangun API mini sistem akademik dengan ketentuan berikut:
    - `GET /dosen/:id/mata-kuliah`
 
 3. Syarat teknis:
-   - gunakan Sequelize ORM,
+  - gunakan Drizzle ORM,
    - implementasi relasi One-to-Many,
    - validasi data pada create/update,
    - error handling terpusat,
