@@ -71,7 +71,6 @@ export const dosen = mysqlTable('dosen', {
 
 ```typescript
 import { int, mysqlTable, varchar } from 'drizzle-orm/mysql-core';
-import { dosen } from './dosen';
 
 export const mataKuliah = mysqlTable('mata_kuliah', {
   id: int('id').autoincrement().primaryKey(),
@@ -111,7 +110,7 @@ Catatan:
 
 ### 4) Pendalaman Query Data
 
-#### A. Filter, sorting, dan pagination
+#### Filter, sorting, dan pagination
 
 ```typescript
 import { and, asc, count, desc, like } from 'drizzle-orm';
@@ -133,27 +132,17 @@ const rows = await db
   .limit(limit)
   .offset((page - 1) * limit);
 
-const [{ total }] = await db
+const countResult = await db
   .select({ total: count() })
   .from(dosen)
   .where(conditions);
 
+const total = countResult[0]?.total ?? 0;
+
 return res.json({ rows, count: total, page, limit });
 ```
 
-#### B. Eager loading relasi
-
-```typescript
-const dosenDenganMatkul = await db.query.dosen.findMany({
-  with: {
-    mataKuliah: {
-      columns: { id: true, nama: true, sks: true }
-    }
-  }
-});
-```
-
-#### C. Select atribut tertentu
+#### Select atribut tertentu
 
 ```typescript
 import { db } from '../db';
