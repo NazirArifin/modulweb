@@ -14,8 +14,8 @@ Inisialisasi proyek:
 
 ```bash
 npm init -y
-npm install express drizzle-orm mysql2
-npm install -D typescript ts-node tsx drizzle-kit @types/node @types/express
+npm install express drizzle-orm mysql2 multer
+npm install -D typescript ts-node tsx drizzle-kit @types/node @types/express @types/multer
 npx tsc --init
 ```
 
@@ -25,6 +25,7 @@ Saran pengaturan dasar `tsconfig.json`:
 - `strict`: `true`
 - `rootDir`: `src`
 - `outDir`: `dist`
+- Tambahkan `include`: `["src/**/*.ts"]` di bagian bawah untuk memastikan semua file TypeScript di dalam folder `src` terkompilasi.
 
 Tambahkan script di `package.json` untuk menjalankan server dan migration:
 
@@ -201,9 +202,6 @@ export const mahasiswa = mysqlTable('mahasiswa', {
   npm: varchar('npm', { length: 20 }).notNull().unique(),
   email: varchar('email', { length: 100 }).notNull().unique()
 });
-
-export type Mahasiswa = typeof mahasiswa.$inferSelect;
-export type NewMahasiswa = typeof mahasiswa.$inferInsert;
 ```
 
 Contoh `drizzle.config.ts`:
@@ -241,11 +239,11 @@ Seeder digunakan untuk mengisi data awal agar:
 Contoh file `src/db/seeds/seedMahasiswa.ts`:
 
 ```typescript
-import { db } from '../index';
-import { mahasiswa } from '../schema';
+import { db } from '../index.js';
+import { mahasiswa } from '../schema.js';
 
 async function seedMahasiswa() {
-  await db.insert(mahasiswa).values([
+  await db.insert(mahasiswa as any).values([
     { nama: 'Andi Pratama', npm: '2301001', email: 'andi@example.com' },
     { nama: 'Budi Santoso', npm: '2301002', email: 'budi@example.com' },
     { nama: 'Citra Lestari', npm: '2301003', email: 'citra@example.com' }
@@ -255,11 +253,11 @@ async function seedMahasiswa() {
 }
 
 seedMahasiswa()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error('Seeder gagal:', error);
-    process.exit(1);
-  });
+.then(() => process.exit(0))
+.catch((error) => {
+  console.error('Seeder gagal:', error);
+  process.exit(1);
+});
 ```
 
 Jalankan seeder:
@@ -287,10 +285,10 @@ Daftar endpoint minimum:
 Contoh ringkas controller CRUD dengan Drizzle:
 
 ```typescript
-import { Request, Response, NextFunction } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { eq } from 'drizzle-orm';
-import { db } from '../db';
-import { mahasiswa } from '../db/schema';
+import { db } from '../db/index.js';
+import { mahasiswa } from '../db/schema.js';
 
 function isValidEmail(email: string) {
   return /^\S+@\S+\.\S+$/.test(email);
@@ -401,14 +399,16 @@ Contoh `routes/mahasiswaRoutes.ts`:
 
 ```typescript
 import { Router } from 'express';
+import multer from 'multer';
 import * as mahasiswaController from '../controllers/mahasiswaController';
 
-const router = Router();
+const router: Router = Router();
+const upload = multer();
 
 router.get('/', mahasiswaController.getAll);
 router.get('/:id', mahasiswaController.getById);
-router.post('/', mahasiswaController.create);
-router.put('/:id', mahasiswaController.update);
+router.post('/', upload.none(), mahasiswaController.create);
+router.put('/:id', upload.none(), mahasiswaController.update);
 router.delete('/:id', mahasiswaController.remove);
 
 export default router;
@@ -419,11 +419,12 @@ Contoh `index.ts`:
 ```typescript
 import express from 'express';
 import { sql } from 'drizzle-orm';
-import mahasiswaRoutes from './routes/mahasiswaRoutes';
-import { db } from './db';
+import mahasiswaRoutes from './routes/mahasiswaRoutes.js';
+import { db } from './db/index.js';
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/health', async (_req, res) => {
   try {
