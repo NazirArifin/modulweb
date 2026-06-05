@@ -36,6 +36,7 @@ Tambahkan script di `package.json` untuk menjalankan server dan migration:
     "start": "node dist/index.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx src/db/seeds/seedMahasiswa.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   ...
@@ -72,6 +73,8 @@ src/
   db/
     index.ts
     schema.ts
+    seeds/
+      seedMahasiswa.ts
 drizzle.config.ts
 ```
 
@@ -81,6 +84,7 @@ Penjelasan singkat:
 - `controllers`: logika request-response
 - `db/schema.ts`: definisi tabel dan tipe data
 - `db/index.ts`: koneksi database dan inisialisasi Drizzle
+- `db/seeds`: script data awal/dummy untuk development dan pengujian
 - `drizzle.config.ts`: konfigurasi migration
 
 ---
@@ -152,13 +156,13 @@ Contoh file `src/db/index.ts`:
 ```typescript
 import mysql from 'mysql2/promise';
 import { drizzle } from 'drizzle-orm/mysql2';
-import * as schema from './schema';
+import * as schema from './schema.js';
 
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: 'password',
-  database: 'db_modulweb',
+  database: 'modul_web',
   connectionLimit: 10
 });
 
@@ -215,7 +219,7 @@ export default defineConfig({
     host: 'localhost',
     user: 'root',
     password: 'password',
-    database: 'db_modulweb'
+    database: 'modul_web'
   }
 });
 ```
@@ -227,9 +231,51 @@ npm run db:generate
 npm run db:migrate
 ```
 
+### 7) Seeder Data Awal
+
+Seeder digunakan untuk mengisi data awal agar:
+- pengujian endpoint lebih cepat,
+- data demo seragam antar perangkat mahasiswa,
+- tidak perlu input manual berulang setelah database di-reset.
+
+Contoh file `src/db/seeds/seedMahasiswa.ts`:
+
+```typescript
+import { db } from '../index';
+import { mahasiswa } from '../schema';
+
+async function seedMahasiswa() {
+  await db.insert(mahasiswa).values([
+    { nama: 'Andi Pratama', npm: '2301001', email: 'andi@example.com' },
+    { nama: 'Budi Santoso', npm: '2301002', email: 'budi@example.com' },
+    { nama: 'Citra Lestari', npm: '2301003', email: 'citra@example.com' }
+  ]);
+
+  console.log('Seeder mahasiswa selesai dijalankan');
+}
+
+seedMahasiswa()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error('Seeder gagal:', error);
+    process.exit(1);
+  });
+```
+
+Jalankan seeder:
+
+```bash
+npm run db:seed
+```
+
+Tips penting:
+- Jalankan migration terlebih dahulu sebelum seeder.
+- Untuk mencegah data duplikat, gunakan email/npm unik atau bersihkan data sebelum insert.
+- Simpan seeder terpisah per entitas jika proyek mulai membesar.
+
 ---
 
-### 7) API Endpoint CRUD Sederhana
+### 8) API Endpoint CRUD Sederhana
 
 Daftar endpoint minimum:
 - `GET /mahasiswa`
@@ -349,7 +395,7 @@ export async function remove(req: Request, res: Response, next: NextFunction) {
 
 ---
 
-### 8) Integrasi Route, Controller, dan Server
+### 9) Integrasi Route, Controller, dan Server
 
 Contoh `routes/mahasiswaRoutes.ts`:
 
@@ -415,11 +461,13 @@ Checklist:
 1. Konfigurasikan koneksi Drizzle ke MariaDB.
 2. Buat schema tabel `mahasiswa` (nama, npm, email).
 3. Jalankan migration Drizzle dan verifikasi tabel terbentuk.
+4. Buat dan jalankan seeder untuk minimal 3 data mahasiswa.
 
 Checklist:
 - koneksi database sukses
 - tabel `mahasiswa` terbentuk
 - migration berhasil dijalankan
+- data awal berhasil masuk melalui seeder
 
 ### Tugas Praktikum 3 - CRUD API Sederhana
 
