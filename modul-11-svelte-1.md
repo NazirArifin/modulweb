@@ -217,9 +217,13 @@ Contoh penggunaan `{@const}` untuk menghitung nilai akhir mahasiswa di dalam ite
 </ul>
 ```
 
-#### Props dengan $props
+### Komponen Svelte
 
-Komponen menerima data melalui rune `$props`. Ini lebih bersih daripada `export let`.
+Aplikasi Svelte dibangun menggunakan arsitektur berbasis komponen. **Komponen** adalah bagian UI yang mandiri, dapat digunakan kembali (*reusable*), dan menggabungkan logika (JavaScript), struktur (HTML), serta gaya (CSS) dalam satu berkas `.svelte`.
+
+#### 1. Props dengan $props
+
+Komponen menerima data dari parent (komponen induk) melalui rune `$props`. Ini menggantikan penggunaan sintaks `export let` pada versi Svelte sebelumnya.
 
 **UserCard.svelte**:
 ```svelte
@@ -240,6 +244,43 @@ Komponen menerima data melalui rune `$props`. Ini lebih bersih daripada `export 
 </script>
 
 <UserCard nama="Ali" npm="2022001" />
+```
+
+#### 2. Mengubah State Parent dari Child Component (Callback Props)
+
+Pada Svelte 5, komunikasi dari komponen anak (*child*) ke komponen induk (*parent*) dilakukan menggunakan **fungsi callback** yang dikirimkan sebagai *props*. Komponen anak cukup memanggil fungsi callback tersebut untuk memicu perubahan *state* di komponen induk.
+
+Contoh implementasi:
+
+**TombolAksi.svelte** (Child Component):
+```svelte
+<script>
+  // Menerima fungsi callback dari parent melalui $props
+  let { label, onKlik } = $props();
+</script>
+
+<!-- Memanggil fungsi callback ketika tombol diklik -->
+<button onclick={onKlik}>
+  {label}
+</button>
+```
+
+**App.svelte** (Parent Component):
+```svelte
+<script>
+  import TombolAksi from './TombolAksi.svelte';
+
+  let count = $state(0);
+
+  function tambahCount() {
+    count += 1;
+  }
+</script>
+
+<p>Count saat ini: {count}</p>
+
+<!-- Mengirimkan fungsi tambahCount ke child component -->
+<TombolAksi label="Tambah Nilai" onKlik={tambahCount} />
 ```
 
 ## Praktikum
