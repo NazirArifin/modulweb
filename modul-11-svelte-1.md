@@ -64,17 +64,18 @@ Svelte 5 memperkenalkan sistem reaktivitas baru yang disebut **Runes**. Runes ad
 
 Svelte tidak lagi menggunakan variabel biasa untuk reaktivitas. Kita harus menggunakan rune `$state`.
 
+Contoh penghitung Like pada postingan media sosial:
 ```svelte
 <script>
-  let count = $state(0);
+  let likes = $state(0);
 
-  function increment() {
-    count += 1;
+  function tambahLike() {
+    likes += 1;
   }
 </script>
 
-<button onclick={increment}>
-  Klik: {count}
+<button onclick={tambahLike}>
+  ❤️ Like: {likes}
 </button>
 ```
 
@@ -82,44 +83,52 @@ Svelte tidak lagi menggunakan variabel biasa untuk reaktivitas. Kita harus mengg
 
 Gunakan `$derived` untuk nilai yang bergantung pada state lain. Ini menggantikan sistem `$:` pada versi sebelumnya.
 
+Contoh menentukan status kepopuleran postingan secara otomatis berdasarkan jumlah like:
 ```svelte
 <script>
-  let count = $state(0);
-  let doubled = $derived(count * 2);
+  let likes = $state(0);
+  // Status otomatis diturunkan dari jumlah likes
+  let statusPopuler = $derived(likes >= 10 ? '🔥 Viral!' : '🌱 Biasa');
 </script>
 
-<p>Jumlah: {count}</p>
-<p>Dua kali lipat: {doubled}</p>
+<button onclick={() => likes++}>❤️ Like: {likes}</button>
+<p>Status Postingan: {statusPopuler}</p>
 ```
 
 #### Efek Side-effect dengan $effect
 
-Gunakan `$effect` untuk menjalankan kode saat state berubah (misal: logging atau sinkronisasi ke storage).
+Gunakan `$effect` untuk menjalankan kode saat state berubah (misal: logging, memicu animasi, atau sinkronisasi data).
 
+Contoh mencetak log ketika postingan menjadi viral:
 ```svelte
 <script>
-  let count = $state(0);
+  let likes = $state(0);
   
   $effect(() => {
-    console.log(`Nilai count sekarang adalah: ${count}`);
+    if (likes >= 10) {
+      console.log("Selamat! Postingan Anda sudah Viral! 🎉");
+    }
   });
 </script>
+
+<button onclick={() => likes++}>❤️ Like: {likes}</button>
 ```
 
 #### Contoh One-Way dan Two-Way Binding
 
+Contoh pengubahan bio akun media sosial:
 ```svelte
 <script>
-  let nama = $state('');
+  let bio = $state('Halo dunia!');
 </script>
 
-<!-- One-way binding + event listener -->
-<input value={nama} oninput={(e) => nama = e.target.value} placeholder="One-way binding" />
+<!-- One-way binding + event listener manual -->
+<input value={bio} oninput={(e) => bio = e.target.value} placeholder="Edit Bio (One-way)" />
 
 <!-- Two-way binding -->
-<input bind:value={nama} placeholder="Two-way binding" />
+<input bind:value={bio} placeholder="Edit Bio (Two-way)" />
 
-<p>Halo, {nama}!</p>
+<p>Preview Bio Anda: <em>"{bio}"</em></p>
 ```
 
 ### Templating di Svelte
@@ -133,62 +142,65 @@ Di Svelte, Anda dapat langsung menyisipkan variabel atau ekspresi JavaScript ke 
 Contoh:
 ```svelte
 <script>
-  let nama = "Budi";
-  let status = "Aktif";
+  let username = "budi_developer";
+  let pengikut = 1250;
 </script>
 
-<p>Halo, nama saya adalah {nama}. Status saya saat ini: {status}</p>
-<p>2 + 2 = {2 + 2}</p>
+<p>Username Anda: @{username}</p>
+<p>Jumlah Pengikut: {pengikut}</p>
+<p>Target Pengikut Baru: {pengikut + 100}</p>
 ```
 
 #### 2. Kondisional dengan {#if}, {:else if}, dan {:else}
 
 Svelte menyediakan blok `{#if}` untuk merender elemen secara kondisional berdasarkan nilai boolean atau ekspresi logika tertentu.
 
-Contoh penggunaan `{#if}` dan `{:else}`:
+Contoh penggunaan `{#if}` dan `{:else}` untuk status pertemanan:
 ```svelte
 <script>
-  let isLoggedIn = $state(false);
+  let sudahFollow = $state(false);
 </script>
 
-{#if isLoggedIn}
-  <button onclick={() => isLoggedIn = false}>Log Out</button>
+{#if sudahFollow}
+  <button onclick={() => sudahFollow = false}>Unfollow</button>
 {:else}
-  <button onclick={() => isLoggedIn = true}>Log In</button>
+  <button onclick={() => sudahFollow = true}>Follow</button>
 {/if}
 ```
 
-Contoh penggunaan lengkap dengan `{:else if}`:
+Contoh penggunaan lengkap dengan `{:else if}` untuk tingkatan akun pengguna:
 ```svelte
 <script>
-  let nilai = $state(75);
+  let statusAkun = $state("free"); // "free", "premium", atau "admin"
 </script>
 
-{#if nilai >= 80}
-  <p>Nilai Anda: A</p>
-{:else if nilai >= 70}
-  <p>Nilai Anda: B</p>
+{#if statusAkun === "admin"}
+  <p>Selamat Datang, Admin! Anda memiliki akses kontrol penuh.</p>
+{:else if statusAkun === "premium"}
+  <p>Akses Premium Aktif! Terima kasih telah berlangganan bebas iklan.</p>
 {:else}
-  <p>Nilai Anda: C</p>
+  <p>Anda menggunakan akun Free. Upgrade ke Premium untuk akses tanpa iklan!</p>
 {/if}
 ```
 
 #### 3. Iterasi dengan {#each}
 
-Svelte menyediakan blok `{#each}` untuk melakukan iterasi pada struktur data seperti array, dan merender daftar elemen secara berulang. Ini sangat berguna untuk menampilkan daftar data.
+Svelte menyediakan blok `{#each}` untuk melakukan iterasi pada struktur data seperti array, dan merender daftar elemen secara berulang.
 
-Contoh iterasi data mahasiswa:
+Contoh menampilkan daftar menu makanan favorit:
 ```svelte
 <script>
-  let mahasiswa = $state([
-    { id: 1, nama: "Budi", npm: "20230001" },
-    { id: 2, nama: "Siti", npm: "20230002" }
+  let daftarMenu = $state([
+    { id: 1, nama: "Nasi Goreng Special", harga: 20000 },
+    { id: 2, nama: "Ayam Geprek Level 5", harga: 15000 },
+    { id: 3, nama: "Sate Ayam Madura", harga: 25000 }
   ]);
 </script>
 
+<h3>Daftar Menu:</h3>
 <ul>
-  {#each mahasiswa as mhs}
-    <li>{mhs.nama} (NPM: {mhs.npm})</li>
+  {#each daftarMenu as menu}
+    <li>{menu.nama} - Rp {menu.harga}</li>
   {/each}
 </ul>
 ```
@@ -197,21 +209,26 @@ Contoh iterasi data mahasiswa:
 
 Tag `{@const}` digunakan untuk mendeklarasikan konstanta lokal di dalam cakupan (*scope*) blok templating seperti `{#each}`, `{#if}`, dan lain-lain. Ini sangat berguna jika Anda ingin melakukan kalkulasi atau transformasi data yang hanya dibutuhkan di dalam blok tersebut tanpa mengotori bagian `<script>`.
 
-Contoh penggunaan `{@const}` untuk menghitung nilai akhir mahasiswa di dalam iterasi:
+Contoh penggunaan `{@const}` untuk menghitung harga setelah diskon di dalam iterasi:
 ```svelte
 <script>
-  let mahasiswa = $state([
-    { id: 1, nama: "Budi", nilaiTugas: 80, nilaiUAS: 90 },
-    { id: 2, nama: "Siti", nilaiTugas: 70, nilaiUAS: 75 }
+  let daftarMenu = $state([
+    { id: 1, nama: "Nasi Goreng Special", harga: 20000, diskon: 0.1 },
+    { id: 2, nama: "Ayam Geprek Level 5", harga: 15000, diskon: 0.2 },
+    { id: 3, nama: "Sate Ayam Madura", harga: 25000, diskon: 0 }
   ]);
 </script>
 
 <ul>
-  {#each mahasiswa as mhs}
-    {@const nilaiAkhir = (mhs.nilaiTugas + mhs.nilaiUAS) / 2}
+  {#each daftarMenu as menu}
+    {@const hargaDiskon = menu.harga * (1 - menu.diskon)}
     <li>
-      <strong>{mhs.nama}</strong> - Nilai Akhir: {nilaiAkhir} 
-      (Status: {nilaiAkhir >= 75 ? 'Lulus' : 'Tidak Lulus'})
+      <strong>{menu.nama}</strong> - 
+      {#if menu.diskon > 0}
+        <del>Rp {menu.harga}</del> menjadi <strong>Rp {hargaDiskon}</strong> (Diskon {menu.diskon * 100}%)
+      {:else}
+        Rp {menu.harga}
+      {/if}
     </li>
   {/each}
 </ul>
@@ -225,25 +242,35 @@ Aplikasi Svelte dibangun menggunakan arsitektur berbasis komponen. **Komponen** 
 
 Komponen menerima data dari parent (komponen induk) melalui rune `$props`. Ini menggantikan penggunaan sintaks `export let` pada versi Svelte sebelumnya.
 
-**UserCard.svelte**:
+**SosmedCard.svelte** (Child Component):
 ```svelte
 <script>
-  let { nama, npm } = $props();
+  let { username, caption, likes } = $props();
 </script>
 
 <div class="card">
-  <h3>{nama}</h3>
-  <p>NPM: {npm}</p>
+  <h3>@{username}</h3>
+  <p>{caption}</p>
+  <span>❤️ {likes} Likes</span>
 </div>
+
+<style>
+  .card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+  }
+</style>
 ```
 
-**App.svelte**:
+**App.svelte** (Parent Component):
 ```svelte
 <script>
-  import UserCard from './UserCard.svelte';
+  import SosmedCard from './SosmedCard.svelte';
 </script>
 
-<UserCard nama="Ali" npm="2022001" />
+<SosmedCard username="budi_dev" caption="Lagi belajar Svelte 5 seru banget! 🚀" likes={42} />
 ```
 
 #### 2. Mengubah State Parent dari Child Component (Callback Props)
@@ -252,66 +279,171 @@ Pada Svelte 5, komunikasi dari komponen anak (*child*) ke komponen induk (*paren
 
 Contoh implementasi:
 
-**TombolAksi.svelte** (Child Component):
+**TombolLike.svelte** (Child Component):
 ```svelte
 <script>
-  // Menerima fungsi callback dari parent melalui $props
-  let { label, onKlik } = $props();
+  let { apaSudahLiked, onToggleLike } = $props();
 </script>
 
-<!-- Memanggil fungsi callback ketika tombol diklik -->
-<button onclick={onKlik}>
-  {label}
+<button onclick={onToggleLike} class:liked={apaSudahLiked}>
+  {apaSudahLiked ? '❤️ Liked!' : '🤍 Like'}
 </button>
+
+<style>
+  button {
+    background-color: #f1f2f6;
+    color: black;
+    border-radius: 5px;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+
+  button.liked {
+    background-color: #ff4757;
+    color: white;
+  }
+</style>
 ```
 
 **App.svelte** (Parent Component):
 ```svelte
 <script>
-  import TombolAksi from './TombolAksi.svelte';
+  import TombolLike from './TombolLike.svelte';
 
-  let count = $state(0);
+  let liked = $state(false);
+  let totalLikes = $state(150);
 
-  function tambahCount() {
-    count += 1;
+  function toggleLike() {
+    liked = !liked;
+    if (liked) {
+      totalLikes += 1;
+    } else {
+      totalLikes -= 1;
+    }
   }
 </script>
 
-<p>Count saat ini: {count}</p>
+<div class="post">
+  <h3>Postingan Hari Ini</h3>
+  <p>Belajar programming itu seru kalau banyak praktek langsung!</p>
+  <p>Jumlah Like: {totalLikes}</p>
 
-<!-- Mengirimkan fungsi tambahCount ke child component -->
-<TombolAksi label="Tambah Nilai" onKlik={tambahCount} />
+  <!-- Mengirim state dan fungsi callback ke child -->
+  <TombolLike apaSudahLiked={liked} onToggleLike={toggleLike} />
+</div>
+
+<style>
+  .post {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+  }
+</style>
 ```
 
 ## Praktikum
 
-Kita akan membangun aplikasi **Counter Plus** yang menggunakan semua runes dasar.
+Kita akan membangun aplikasi **Tinder Makanan Sederhana (Food Tinder)** yang menggunakan semua runes dasar.
 
 1. Edit `src/App.svelte`:
 ```svelte
 <script>
-  let count = $state(0);
-  let doubled = $derived(count * 2);
-  let color = $state('black');
-
+  let index = $state(0);
+  let likedCount = $state(0);
+  let status = $state('Silakan pilih makanan Anda!');
+  
+  let daftarMakanan = [
+    { nama: 'Nasi Goreng', img: '🍳' },
+    { nama: 'Ayam Geprek', img: '🍗' },
+    { nama: 'Bakso Sapi', img: '🍜' },
+    { nama: 'Sate Ayam', img: '🍢' }
+  ];
+  
+  let selesai = $derived(index >= daftarMakanan.length);
+  
   $effect(() => {
-    if (count > 10) color = 'red';
-    else color = 'black';
+    if (selesai) {
+      status = `Selesai! Anda menyukai ${likedCount} dari ${daftarMakanan.length} makanan.`;
+    }
   });
+
+  function swipeRight() {
+    likedCount += 1;
+    index += 1;
+  }
+
+  function swipeLeft() {
+    index += 1;
+  }
+  
+  function reset() {
+    index = 0;
+    likedCount = 0;
+    status = 'Silakan pilih makanan Anda!';
+  }
 </script>
 
-<h1 style="color: {color}">Simple Counter</h1>
-<p>Count: {count}</p>
-<p>Double: {doubled}</p>
+<h1>Food Tinder App 🍔</h1>
+<p>Status: {status}</p>
 
-<button onclick={() => count++}>Tambah</button>
-<button onclick={() => count--}>Kurangi</button>
+{#if !selesai}
+  <div class="card">
+    <div class="emoji">{daftarMakanan[index].img}</div>
+    <h3>{daftarMakanan[index].nama}</h3>
+    
+    <button onclick={swipeLeft} class="btn-skip">🙅 Skip</button>
+    <button onclick={swipeRight} class="btn-suka">❤️ Suka</button>
+  </div>
+{:else}
+  <button onclick={reset} class="btn-reset">Ulangi Pilihan</button>
+{/if}
+
+<style>
+  .card {
+    border: 2px solid orange;
+    padding: 20px;
+    text-align: center;
+    font-size: 1.5rem;
+    max-width: 300px;
+    border-radius: 10px;
+  }
+
+  .emoji {
+    font-size: 3rem;
+  }
+
+  .btn-skip {
+    background: red;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .btn-suka {
+    background: green;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .btn-reset {
+    padding: 10px 15px;
+    cursor: pointer;
+  }
+</style>
 ```
 
 ## Tugas
 
-1. Buatlah komponen `MahasiswaCard.svelte` menggunakan `$props`.
-2. Tampilkan daftar mahasiswa menggunakan blok `{#each}`.
-3. Tambahkan fitur pencarian yang menggunakan `$state` untuk input dan `$derived` untuk hasil filter daftar mahasiswa.
-4. Tambahkan tombol **Hapus** pada setiap item mahasiswa yang jika diklik akan menghapus data mahasiswa tersebut dari daftar.
+1. Buatlah komponen `MakananCard.svelte` menggunakan `$props` untuk menampilkan detail makanan.
+2. Tampilkan daftar semua makanan yang disukai menggunakan blok `{#each}`.
+3. Tambahkan fitur pencarian makanan menggunakan `$state` untuk input pencarian dan `$derived` untuk memfilter makanan berdasarkan nama.
+4. Tambahkan tombol **Hapus** pada setiap item makanan favorit yang disukai yang jika diklik akan menghapusnya dari daftar favorit.
 5. Masukkan kode sumber `.svelte` dan screenshot aplikasi ke laporan!
