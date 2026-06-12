@@ -2,6 +2,19 @@
 
 Tujuan Pembelajaran: Mahasiswa mengenal Svelte 5 sebagai framework frontend modern, memahami konsep reaktivitas baru (Runes), dan mampu membangun UI modular berbasis komponen.
 
+## Instalasi
+
+```
+npx sv create my-app
+cd my-app
+npm run dev
+```
+
+Dokumentasi lengkap:
+- https://svelte.dev/docs/svelte/overview
+- https://svelte.dev/docs/kit/introduction
+
+
 ## Materi
 
 ### Single Page Application (SPA)
