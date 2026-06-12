@@ -92,31 +92,6 @@ Gunakan `$derived` untuk nilai yang bergantung pada state lain. Ini menggantikan
 <p>Dua kali lipat: {doubled}</p>
 ```
 
-#### Props dengan $props
-
-Komponen menerima data melalui rune `$props`. Ini lebih bersih daripada `export let`.
-
-**UserCard.svelte**:
-```svelte
-<script>
-  let { nama, npm } = $props();
-</script>
-
-<div class="card">
-  <h3>{nama}</h3>
-  <p>NPM: {npm}</p>
-</div>
-```
-
-**App.svelte**:
-```svelte
-<script>
-  import UserCard from './UserCard.svelte';
-</script>
-
-<UserCard nama="Ali" npm="2022001" />
-```
-
 #### Efek Side-effect dengan $effect
 
 Gunakan `$effect` untuk menjalankan kode saat state berubah (misal: logging atau sinkronisasi ke storage).
@@ -147,7 +122,58 @@ Gunakan `$effect` untuk menjalankan kode saat state berubah (misal: logging atau
 <p>Halo, {nama}!</p>
 ```
 
-### Templating dengan {#each}
+### Templating di Svelte
+
+Svelte menggunakan sintaks HTML standar yang diperluas dengan kemampuan templating dinamis menggunakan kurung kurawal `{}` dan blok logika khusus.
+
+#### 1. Penggunaan Variabel (Interpolasi)
+
+Di Svelte, Anda dapat langsung menyisipkan variabel atau ekspresi JavaScript ke dalam tag HTML menggunakan tanda kurung kurawal `{}`.
+
+Contoh:
+```svelte
+<script>
+  let nama = "Budi";
+  let status = "Aktif";
+</script>
+
+<p>Halo, nama saya adalah {nama}. Status saya saat ini: {status}</p>
+<p>2 + 2 = {2 + 2}</p>
+```
+
+#### 2. Kondisional dengan {#if}, {:else if}, dan {:else}
+
+Svelte menyediakan blok `{#if}` untuk merender elemen secara kondisional berdasarkan nilai boolean atau ekspresi logika tertentu.
+
+Contoh penggunaan `{#if}` dan `{:else}`:
+```svelte
+<script>
+  let isLoggedIn = $state(false);
+</script>
+
+{#if isLoggedIn}
+  <button onclick={() => isLoggedIn = false}>Log Out</button>
+{:else}
+  <button onclick={() => isLoggedIn = true}>Log In</button>
+{/if}
+```
+
+Contoh penggunaan lengkap dengan `{:else if}`:
+```svelte
+<script>
+  let nilai = $state(75);
+</script>
+
+{#if nilai >= 80}
+  <p>Nilai Anda: A</p>
+{:else if nilai >= 70}
+  <p>Nilai Anda: B</p>
+{:else}
+  <p>Nilai Anda: C</p>
+{/if}
+```
+
+#### 3. Iterasi dengan {#each}
 
 Svelte menyediakan blok `{#each}` untuk melakukan iterasi pada struktur data seperti array, dan merender daftar elemen secara berulang. Ini sangat berguna untuk menampilkan daftar data.
 
@@ -165,6 +191,55 @@ Contoh iterasi data mahasiswa:
     <li>{mhs.nama} (NPM: {mhs.npm})</li>
   {/each}
 </ul>
+```
+
+#### 4. Konstanta Lokal dengan {@const}
+
+Tag `{@const}` digunakan untuk mendeklarasikan konstanta lokal di dalam cakupan (*scope*) blok templating seperti `{#each}`, `{#if}`, dan lain-lain. Ini sangat berguna jika Anda ingin melakukan kalkulasi atau transformasi data yang hanya dibutuhkan di dalam blok tersebut tanpa mengotori bagian `<script>`.
+
+Contoh penggunaan `{@const}` untuk menghitung nilai akhir mahasiswa di dalam iterasi:
+```svelte
+<script>
+  let mahasiswa = $state([
+    { id: 1, nama: "Budi", nilaiTugas: 80, nilaiUAS: 90 },
+    { id: 2, nama: "Siti", nilaiTugas: 70, nilaiUAS: 75 }
+  ]);
+</script>
+
+<ul>
+  {#each mahasiswa as mhs}
+    {@const nilaiAkhir = (mhs.nilaiTugas + mhs.nilaiUAS) / 2}
+    <li>
+      <strong>{mhs.nama}</strong> - Nilai Akhir: {nilaiAkhir} 
+      (Status: {nilaiAkhir >= 75 ? 'Lulus' : 'Tidak Lulus'})
+    </li>
+  {/each}
+</ul>
+```
+
+#### Props dengan $props
+
+Komponen menerima data melalui rune `$props`. Ini lebih bersih daripada `export let`.
+
+**UserCard.svelte**:
+```svelte
+<script>
+  let { nama, npm } = $props();
+</script>
+
+<div class="card">
+  <h3>{nama}</h3>
+  <p>NPM: {npm}</p>
+</div>
+```
+
+**App.svelte**:
+```svelte
+<script>
+  import UserCard from './UserCard.svelte';
+</script>
+
+<UserCard nama="Ali" npm="2022001" />
 ```
 
 ## Praktikum
