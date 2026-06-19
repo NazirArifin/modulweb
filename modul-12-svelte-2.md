@@ -319,7 +319,7 @@ Untuk mengaktifkan tombol Edit dan Hapus, kita ubah sedikit bagian aksi pada tab
   >
     Edit
   </button>
-```svelte
+```
 
 Berikutnya untuk fitur hapus, kita tambahkan fungsi `deleteMahasiswa` dan panggil pada tombol Hapus.
 
@@ -342,6 +342,9 @@ Berikutnya untuk fitur hapus, kita tambahkan fungsi `deleteMahasiswa` dan panggi
 		}
 	}
 ```
+
+lalu ubah tombol Hapus menjadi seperti berikut:
+
 
 ```svelte
   <button
